@@ -1,4 +1,5 @@
 using AppExtensionista.Data;
+using AppExtensionista.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,11 +15,25 @@ builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
 // Garante que o banco .db e as tabelas sejam criadas automaticamente na inicialização
-// Não recria o banco caso ele já exista
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Aplica as migrations sem apagar dados já existentes
     context.Database.Migrate();
+
+    // Cria User ADM se o banco estiver limpo
+    if (!context.Usuarios.Any())
+    {
+        context.Usuarios.Add(new UsuarioModel
+        {
+            Nome = "Administrador",
+            Login = "Admin",
+            Senha = "4731589", 
+            DiasAlertaPadrao = 7
+        });
+        context.SaveChanges();
+    }
 }
 
 // Configurações do Pipeline HTTP
