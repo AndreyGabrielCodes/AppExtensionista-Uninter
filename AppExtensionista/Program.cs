@@ -1,5 +1,6 @@
 using AppExtensionista.Data;
 using AppExtensionista.Models;
+using AppExtensionista.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Controllers e Views
 builder.Services.AddControllersWithViews();
+
+// Registro dos Services com Injeção de Dependencia
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IAlimentoService, AlimentoService>();
+builder.Services.AddScoped<IGuiaArmazenamentoService, GuiaArmazenamentoService>();
+builder.Services.AddScoped<IEstoqueService, EstoqueService>();
+builder.Services.AddScoped<IDescarteService, DescarteService>();
 
 var app = builder.Build();
 
