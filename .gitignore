@@ -514,4 +514,9 @@ FodyWeavers.xsd
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
+# SQL Lite
+*.db
+*.db-shm
+*.db-wal
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio
