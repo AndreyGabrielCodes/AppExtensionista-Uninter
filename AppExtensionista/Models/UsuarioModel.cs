@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppExtensionista.Models
 {
-    [Index(nameof(Email), IsUnique = true)]
+    [Index(nameof(Login), IsUnique = true)]
     [Table("USUARIO")]
     public class UsuarioModel
     {
@@ -14,13 +14,12 @@ namespace AppExtensionista.Models
         public int IdUsuario { get; set; }
 
         [Required]
-        [Column("NOME")]
-        public string Nome { get; set; }
+        [Column("LOGIN")]
+        public string Login { get; set; }
 
         [Required]
-        [EmailAddress]
-        [Column("EMAIL")]
-        public string Email { get; set; }
+        [Column("NOME")]
+        public string Nome { get; set; }
 
         [Required]
         [Column("SENHA")]
