@@ -38,10 +38,7 @@ namespace AppExtensionista.Models
         [Column("DATA_VALIDADE")]
         public DateTime DataValidade { get; set; }
 
-        [Column("LOCAL_ARMAZENAMENTO")]
-        public string LocalArmazenamento { get; set; }
-
-        [Column("FORMA_ARMAZENAMENTO")]
-        public string FormaArmazenamento { get; set; }
+        [Column("MARCA")]
+        public string MarcaAlimento { get; set; }
     }
 }
