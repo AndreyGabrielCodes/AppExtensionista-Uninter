@@ -51,14 +51,14 @@ namespace AppExtensionista.ViewModels
         public DateTime DataDescarte { get; set; }
         public decimal Quantidade { get; set; }
         public string Marca { get; set; }
-        public DescarteEnum TipoDescarte { get; set; }
+        public string TipoDescarte { get; set; }
         public string DescricaoMotivo { get; set; }
     }
 
     // Modal para exibição do motivo na tela de Descartados
     public class MotivoDescarteModalViewModel
     {
-        public DescarteEnum TipoDescarte { get; set; }
+        public string TipoDescarte { get; set; }
         public string DescricaoMotivo { get; set; }
     }
 }

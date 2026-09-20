@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AppExtensionista.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -36,5 +37,10 @@ namespace AppExtensionista.Models
 
         [Column("DESCRICAO_MOTIVO")]
         public string? DescricaoMotivo { get; set; }
+
+        [Required]
+        [Column("TIPO_DESCARTE")]
+        public DescarteEnum TipoDescarte { get; set; }
+
     }
 }
