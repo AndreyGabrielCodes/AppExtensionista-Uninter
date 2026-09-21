@@ -26,9 +26,5 @@ namespace AppExtensionista.Models
         [Required]
         [Column("UNIDADE_MEDIDA")]
         public UnidadeMedidaEnum UnidadeMedida { get; set; }
-
-        [Required]
-        [Column("ATIVO")]
-        public bool Ativo { get; set; } = true;
     }
 }
