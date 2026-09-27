@@ -12,7 +12,7 @@
     </div>
 
     <div class="search-box">
-        <input type="text" placeholder="Text field in empty state" @bind="termoPesquisa" />
+        <input type="text" placeholder="Digite um alimento ou marca" @bind="termoPesquisa" />
         <button class="btn-search">Pesquisar</button>
     </div>
 
@@ -109,11 +109,80 @@
 }
 
 <style>
+    .mobile-container {
+        padding: 20px;
+        font-family: sans-serif;
+    }
+
+    .pb-60 {
+        padding-bottom: 70px;
+    }
+
+    .header h2 {
+        margin-bottom: 4px;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .subtitle {
+        display: block;
+        color: #666;
+        margin-bottom: 16px;
+        font-size: 13px;
+    }
+
     .total-box {
         display: flex;
         justify-content: space-between;
         font-size: 13px;
         margin-bottom: 12px;
+        background: #f5f5f5;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .search-box {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 15px;
+    }
+
+        .search-box input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+    .btn-search {
+        background: #1976d2;
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .accordion-item {
+        border: 1px solid #000;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        overflow: hidden;
+    }
+
+    .accordion-header {
+        background: #eee;
+        padding: 10px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .accordion-body {
+        padding: 8px;
+        background: #fff;
     }
 
     .item-row {
@@ -123,15 +192,60 @@
         font-size: 12px;
     }
 
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 2000;
+    }
+
+    .modal-card {
+        background: #1e1e1e;
+        color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 320px;
+        text-align: left;
+    }
+
+        .modal-card h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #444;
+            padding-bottom: 8px;
+        }
+
     .desc-box {
         background: #333;
         padding: 10px;
         border-radius: 4px;
         margin: 10px 0;
+        font-size: 13px;
+    }
+
+    .modal-actions {
+        display: flex;
+        margin-top: 15px;
     }
 
     .align-right {
-        display: flex;
         justify-content: flex-end;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-light {
+        background: #ccc;
+        color: #000;
     }
 </style>

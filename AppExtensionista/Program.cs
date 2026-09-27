@@ -62,12 +62,11 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-// Controllers MVC 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+// Controllers 
+app.MapControllers();
 
 // Configurações do Blazor
+app.MapRazorPages();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 

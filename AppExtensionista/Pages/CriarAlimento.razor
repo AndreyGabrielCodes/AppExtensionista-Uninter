@@ -1,44 +1,50 @@
 ﻿@page "/criar-alimento"
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@using AppExtensionista.Enums
+@inject NavigationManager Navigation
 
 <div class="mobile-container pb-60">
     <div class="header">
-        <h2>(Logo) - Alimento</h2>
-        <small class="subtitle">Criar/Alterar de alimentos</small>
+        <h2>(Logo) - Cadastrar Alimento</h2>
     </div>
 
     <div class="form-container">
         <div class="form-group">
-            <label>Alimentos existentes:</label>
-            <select class="form-control" @onchange="OnAlimentoExistenteSelected">
-                <option value="">Selecione para carregar dados...</option>
-                <option value="1">Arroz</option>
-                <option value="2">Feijão</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Nome Alimento:</label>
-            <input type="text" class="form-control" @bind="nomeAlimento" />
-        </div>
-
-        <div class="form-group">
-            <label>Unidade Medida:</label>
-            <input type="text" class="form-control" @bind="unidadeMedida" />
-        </div>
-
-        <div class="form-group">
-            <label>Quantidade:</label>
-            <input type="number" class="form-control" @bind="quantidade" />
+            <label>Nome do Alimento:</label>
+            <input type="text" class="form-control" placeholder="Ex: Arroz, Feijão..." @bind="alimentoModel.Nome" />
         </div>
 
         <div class="form-group">
             <label>Marca:</label>
-            <input type="text" class="form-control" @bind="marca" />
+            <input type="text" class="form-control" placeholder="Ex: Camil, Tio João..." @bind="alimentoModel.Marca" />
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <label>Quantidade:</label>
+                <input type="number" class="form-control" placeholder="0" @bind="alimentoModel.Quantidade" />
+            </div>
+
+            <div class="form-group col">
+                <label>Unidade de Medida:</label>
+                <select class="form-control" @bind="alimentoModel.UnidadeMedida">
+                    @foreach (UnidadeMedidaEnum unidade in Enum.GetValues(typeof(UnidadeMedidaEnum)))
+                    {
+                        <option value="@unidade">@GetEnumDisplayName(unidade)</option>
+                    }
+                </select>
+            </div>
         </div>
 
         <div class="form-group">
-            <label>Data validade:</label>
-            <input type="date" class="form-control" @bind="dataValidade" />
+            <label>Data de Vencimento:</label>
+            <input type="date" class="form-control" @bind="alimentoModel.DataVencimento" />
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" @onclick="Salvar">Salvar</button>
+            <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
         </div>
     </div>
 </div>
@@ -51,36 +57,75 @@
 }
 
 @code {
-    private string nomeAlimento = "";
-    private string unidadeMedida = "";
-    private decimal quantidade;
-    private string marca = "";
-    private DateTime dataValidade = DateTime.Today;
     private bool exibirOpcoes = false;
+    private AlimentoFormModel alimentoModel = new();
 
-    private void OnAlimentoExistenteSelected(ChangeEventArgs e)
+    private void Salvar()
     {
-        // Preenche com dados mock para demonstração de alteração
-        if (!string.IsNullOrEmpty(e.Value?.ToString()))
+        // Lógica de salvamento aqui
+        Navigation.NavigateTo("/estoque");
+    }
+
+    private void Cancelar()
+    {
+        Navigation.NavigateTo("/estoque");
+    }
+
+    private string GetEnumDisplayName(UnidadeMedidaEnum value)
+    {
+        var fieldInfo = value.GetType().GetField(value.ToString());
+        if (fieldInfo == null) return value.ToString();
+
+        var displayAttribute = fieldInfo.GetCustomAttribute<DisplayAttribute>();
+        if (displayAttribute != null)
         {
-            nomeAlimento = "Arroz";
-            unidadeMedida = "KG";
+            var name = displayAttribute.Name ?? value.ToString();
+            var shortName = displayAttribute.ShortName;
+            return !string.IsNullOrEmpty(shortName) ? $"{name} ({shortName})" : name;
         }
+
+        return value.ToString();
+    }
+
+    public class AlimentoFormModel
+    {
+        public string Nome { get; set; } = "";
+        public string Marca { get; set; } = "";
+        public decimal Quantidade { get; set; }
+        public UnidadeMedidaEnum UnidadeMedida { get; set; } = UnidadeMedidaEnum.Quilograma;
+        public DateTime DataVencimento { get; set; } = DateTime.Today;
     }
 }
 
 <style>
-    .subtitle {
-        display: block;
-        color: #666;
-        margin-top: -8px;
-        margin-bottom: 16px;
+    .mobile-container {
+        padding: 20px;
+        font-family: sans-serif;
+    }
+
+    .pb-60 {
+        padding-bottom: 70px;
+    }
+
+    .header h2 {
+        margin-bottom: 20px;
+        font-size: 22px;
+        font-weight: bold;
     }
 
     .form-container {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 14px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 10px;
+    }
+
+    .col {
+        flex: 1;
     }
 
     .form-group label {
@@ -88,13 +133,47 @@
         font-size: 13px;
         font-weight: bold;
         margin-bottom: 4px;
+        color: #333;
     }
 
     .form-control {
         width: 100%;
         padding: 10px;
-        border: 1px solid #000;
+        border: 1px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
+        font-size: 14px;
+        background: #fff;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #1976d2;
+        }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        background: #1976d2;
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background: #e0e0e0;
+        color: #333;
     }
 </style>

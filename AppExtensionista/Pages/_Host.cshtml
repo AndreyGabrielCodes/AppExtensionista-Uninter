@@ -1,5 +1,6 @@
 ﻿@page "/"
 @namespace AppExtensionista.Pages
+@using AppExtensionista
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = null;
@@ -12,10 +13,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>App Extensionista</title>
     <base href="~/" />
-    <link rel="stylesheet" href="css/site.css" />
 </head>
 <body>
-    <component type="typeof(App)" render-mode="ServerPrerendered" />
+    <component type="typeof(App)" render-mode="Server" />
+
+    <div id="blazor-error-ui" style="display:none;">
+        Ocorreu um erro não tratado.
+        <a href="" class="reload">Recarregar</a>
+    </div>
 
     <script src="_framework/blazor.server.js"></script>
 </body>
