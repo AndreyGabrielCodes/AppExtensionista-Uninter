@@ -1,0 +1,137 @@
+﻿@page "/descartados"
+
+<div class="mobile-container pb-60">
+    <div class="header">
+        <h2>(Logo) - Descartados</h2>
+        <small class="subtitle">Descarte/Consumo de produtos</small>
+    </div>
+
+    <div class="total-box">
+        <span>Total Descartados/Consumidos</span>
+        <strong>0</strong>
+    </div>
+
+    <div class="search-box">
+        <input type="text" placeholder="Text field in empty state" @bind="termoPesquisa" />
+        <button class="btn-search">Pesquisar</button>
+    </div>
+
+    <div class="accordion-list">
+        @foreach (var grupo in gruposDescartados)
+        {
+            <div class="accordion-item">
+                <div class="accordion-header" @onclick="() => ToggleGrupo(grupo.Id)">
+                    <span>@(grupo.Aberto ? "▲" : "▼") @grupo.Nome - @grupo.QuantidadeTotal</span>
+                </div>
+
+                @if (grupo.Aberto)
+                {
+                    <div class="accordion-body">
+                        @foreach (var item in grupo.Itens)
+                        {
+                            <div class="item-row" @onclick="() => ExibirMotivo(item)">
+                                <span>DT Descarte - @item.Quantidade - @item.Marca - @item.Motivo</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    @if (itemSelecionado != null)
+    {
+        <div class="modal-overlay">
+            <div class="modal-card">
+                <h3>Motivo Descarte</h3>
+                <p><strong>Tipo descarte :</strong> Consumo/Descarte</p>
+                <div class="desc-box">
+                    <label>Descrição:</label>
+                    <p>Descartado pois já estava mofando</p>
+                </div>
+                <div class="modal-actions align-right">
+                    <button class="btn btn-light" @onclick="() => itemSelecionado = null">Voltar</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<AppExtensionista.Shared.BottomNav OnAbrirOpcoes="() => exibirOpcoes = true" />
+
+@if (exibirOpcoes)
+{
+    <AppExtensionista.Shared.OpcoesModal OnFechar="() => exibirOpcoes = false" />
+}
+
+@code {
+    private string termoPesquisa = "";
+    private bool exibirOpcoes = false;
+    private ItemDescarteMock? itemSelecionado;
+
+    private List<GrupoDescarteMock> gruposDescartados = new()
+    {
+        new GrupoDescarteMock { Id = 1, Nome = "Alimento (Grupado)", QuantidadeTotal = "Quantidade", Aberto = true,
+            Itens = new() {
+                new() { Quantidade = "Quantidade", Marca = "Marca", Motivo = "Motivo" },
+                new() { Quantidade = "Quantidade", Marca = "Marca", Motivo = "Motivo" }
+            }
+        },
+        new GrupoDescarteMock { Id = 2, Nome = "Alimento (Grupado)", QuantidadeTotal = "Quantidade", Aberto = false }
+    };
+
+    private void ToggleGrupo(int id)
+    {
+        var g = gruposDescartados.FirstOrDefault(x => x.Id == id);
+        if (g != null) g.Aberto = !g.Aberto;
+    }
+
+    private void ExibirMotivo(ItemDescarteMock item)
+    {
+        itemSelecionado = item;
+    }
+
+    public class GrupoDescarteMock
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; } = "";
+        public string QuantidadeTotal { get; set; } = "";
+        public bool Aberto { get; set; }
+        public List<ItemDescarteMock> Itens { get; set; } = new();
+    }
+
+    public class ItemDescarteMock
+    {
+        public string Quantidade { get; set; } = "";
+        public string Marca { get; set; } = "";
+        public string Motivo { get; set; } = "";
+    }
+}
+
+<style>
+    .total-box {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+    .item-row {
+        cursor: pointer;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+        font-size: 12px;
+    }
+
+    .desc-box {
+        background: #333;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+
+    .align-right {
+        display: flex;
+        justify-content: flex-end;
+    }
+</style>

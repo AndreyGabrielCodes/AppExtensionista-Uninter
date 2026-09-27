@@ -1,0 +1,187 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+
+<div class="mobile-container login-page">
+    <div class="logo-area">
+        <h1>Logo</h1>
+        <p>Sistema de controle de vencimento de alimentos</p>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-primary btn-block" @onclick="Logar">Logar</button>
+        <button class="btn btn-outline btn-block" @onclick="() => exibirModalCriar = true">Criar Usuario</button>
+    </div>
+
+    @if (exibirModalCriar)
+    {
+        <div class="modal-overlay">
+            <div class="modal-card">
+                <h3>Usuário</h3>
+
+                <div class="form-group">
+                    <label>Login:</label>
+
+                    <input type="text" class="form-control" @bind="novoUsuario.Login" />
+                </div>
+
+                <div class="form-group">
+                    <label>Nome:</label>
+                    <input type="text" class="form-control" @bind="novoUsuario.Nome" />
+                </div>
+
+                <div class="form-group">
+                    <label>Senha:</label>
+                    <input type="password" class="form-control" @bind="novoUsuario.Senha" />
+                </div>
+
+                <div class="form-group">
+                    <label>Dias Alerta Vencimento:</label>
+                    <input type="number" class="form-control" @bind="novoUsuario.DiasAlerta" />
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-dark" @onclick="SalvarUsuario">Salvar</button>
+                    <button class="btn btn-light" @onclick="() => exibirModalCriar = false">Voltar</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool exibirModalCriar = false;
+    private UsuarioForm novoUsuario = new();
+
+    private void Logar()
+    {
+        Navigation.NavigateTo("/estoque");
+    }
+
+    private void SalvarUsuario()
+    {
+        exibirModalCriar = false;
+        Navigation.NavigateTo("/estoque");
+    }
+
+    public class UsuarioForm
+    {
+        public string Login { get; set; } = "";
+        public string Nome { get; set; } = "";
+        public string Senha { get; set; } = "";
+        public int DiasAlerta { get; set; } = 7;
+    }
+}
+
+<style>
+    .mobile-container {
+        padding: 20px;
+        text-align: center;
+        font-family: sans-serif;
+    }
+
+    .login-page {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 80vh;
+    }
+
+    .logo-area h1 {
+        font-size: 36px;
+        margin-bottom: 10px;
+    }
+
+    .logo-area p {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 40px;
+    }
+
+    .btn {
+        padding: 12px;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+
+    .btn-block {
+        width: 100%;
+        display: block;
+        margin-bottom: 12px;
+    }
+
+    .btn-primary {
+        background: #000;
+        color: #fff;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border-color: #000;
+        color: #000;
+    }
+
+    .btn-dark {
+        background: #222;
+        color: #fff;
+    }
+
+    .btn-light {
+        background: #ccc;
+        color: #000;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 2000;
+    }
+
+    .modal-card {
+        background: #1e1e1e;
+        color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 320px;
+        text-align: left;
+    }
+
+        .modal-card h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #444;
+            padding-bottom: 8px;
+        }
+
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #555;
+        background: #333;
+        color: #fff;
+        box-sizing: border-box;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+</style>

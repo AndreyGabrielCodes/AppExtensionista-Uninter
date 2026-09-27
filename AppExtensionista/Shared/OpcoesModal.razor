@@ -1,0 +1,50 @@
+﻿@inject NavigationManager Navigation
+
+<div class="modal-overlay">
+    <div class="modal-card opcoes-card">
+        <h3>Opções</h3>
+
+        <button class="menu-btn" @onclick="Sair">
+            <span>🚪</span> Sair
+        </button>
+
+        <button class="menu-btn" @onclick="() => exibindoAvisoVencimento = true">
+            Alterar número de dias de aviso de vencimento
+        </button>
+
+        @if (exibindoAvisoVencimento)
+        {
+            <div class="input-inline">
+                <input type="number" class="form-control" @bind="diasAlerta" />
+                <button class="btn btn-dark" @onclick="SalvarDias">Salvar</button>
+            </div>
+        }
+
+        <div class="modal-actions align-right">
+            <button class="btn btn-light" @onclick="OnFechar">Voltar</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnFechar { get; set; }
+
+    private bool exibindoAvisoVencimento = false;
+    private int diasAlerta = 7;
+
+    private void Sair()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void SalvarDias()
+    {
+        exibindoAvisoVencimento = false;
+    }
+}
+
+<style>
+    .opcoes-card { background: #222; color: #fff; width: 85%; max-width: 300px; }
+    .menu-btn { width: 100%; text-align: left; background: none; border: none; color: #fff; padding: 12px 0; font-size: 14px; border-bottom: 1px solid #333; cursor: pointer; }
+    .input-inline { display: flex; gap: 8px; margin-top: 10px; }
+</style>

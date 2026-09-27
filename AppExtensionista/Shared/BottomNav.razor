@@ -1,0 +1,72 @@
+﻿@inject NavigationManager Navigation
+
+<div class="bottom-nav">
+    <button class="nav-item @(IsActive("/estoque") ? "active" : "")" @onclick='() => NavigateTo("/estoque")'>
+        <span class="icon">⭐</span>
+        <span class="label">Estoque</span>
+    </button>
+    <button class="nav-item @(IsActive("/criar-alimento") ? "active" : "")" @onclick='() => NavigateTo("/criar-alimento")'>
+        <span class="icon">⭐</span>
+        <span class="label">Alimento</span>
+    </button>
+    <button class="nav-item @(IsActive("/descartados") ? "active" : "")" @onclick='() => NavigateTo("/descartados")'>
+        <span class="icon">⭐</span>
+        <span class="label">Descarte</span>
+    </button>
+    <button class="nav-item" @onclick="OnAbrirOpcoes">
+        <span class="icon">⭐</span>
+        <span class="label">Opções</span>
+    </button>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnAbrirOpcoes { get; set; }
+
+    private bool IsActive(string relativePath)
+    {
+        return Navigation.Uri.EndsWith(relativePath, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void NavigateTo(string path)
+    {
+        Navigation.NavigateTo(path);
+    }
+}
+
+<style>
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background-color: #1a1a1a;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 1000;
+        border-top: 1px solid #333;
+    }
+
+    .nav-item {
+        background: none;
+        border: none;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 11px;
+        cursor: pointer;
+        opacity: 0.7;
+    }
+
+        .nav-item.active {
+            opacity: 1;
+            font-weight: bold;
+        }
+
+        .nav-item .icon {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+</style>

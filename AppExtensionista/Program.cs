@@ -20,6 +20,10 @@ builder.Services.AddScoped<IGuiaArmazenamentoService, GuiaArmazenamentoService>(
 builder.Services.AddScoped<IEstoqueService, EstoqueService>();
 builder.Services.AddScoped<IDescarteService, DescarteService>();
 
+// Suporte ao Razor/Blazor Services
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+
 var app = builder.Build();
 
 // Garante que o banco .db e as tabelas sejam criadas automaticamente na inicialização
@@ -37,7 +41,7 @@ using (var scope = app.Services.CreateScope())
         {
             Nome = "Administrador",
             Login = "Admin",
-            Senha = "4731589", 
+            Senha = "4731589",
             DiasAlertaPadrao = 7
         });
         context.SaveChanges();
@@ -58,8 +62,13 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+// Controllers MVC 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Configurações do Blazor
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
 
 app.Run();

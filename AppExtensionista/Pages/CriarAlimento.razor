@@ -1,0 +1,100 @@
+﻿@page "/criar-alimento"
+
+<div class="mobile-container pb-60">
+    <div class="header">
+        <h2>(Logo) - Alimento</h2>
+        <small class="subtitle">Criar/Alterar de alimentos</small>
+    </div>
+
+    <div class="form-container">
+        <div class="form-group">
+            <label>Alimentos existentes:</label>
+            <select class="form-control" @onchange="OnAlimentoExistenteSelected">
+                <option value="">Selecione para carregar dados...</option>
+                <option value="1">Arroz</option>
+                <option value="2">Feijão</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Nome Alimento:</label>
+            <input type="text" class="form-control" @bind="nomeAlimento" />
+        </div>
+
+        <div class="form-group">
+            <label>Unidade Medida:</label>
+            <input type="text" class="form-control" @bind="unidadeMedida" />
+        </div>
+
+        <div class="form-group">
+            <label>Quantidade:</label>
+            <input type="number" class="form-control" @bind="quantidade" />
+        </div>
+
+        <div class="form-group">
+            <label>Marca:</label>
+            <input type="text" class="form-control" @bind="marca" />
+        </div>
+
+        <div class="form-group">
+            <label>Data validade:</label>
+            <input type="date" class="form-control" @bind="dataValidade" />
+        </div>
+    </div>
+</div>
+
+<AppExtensionista.Shared.BottomNav OnAbrirOpcoes="() => exibirOpcoes = true" />
+
+@if (exibirOpcoes)
+{
+    <AppExtensionista.Shared.OpcoesModal OnFechar="() => exibirOpcoes = false" />
+}
+
+@code {
+    private string nomeAlimento = "";
+    private string unidadeMedida = "";
+    private decimal quantidade;
+    private string marca = "";
+    private DateTime dataValidade = DateTime.Today;
+    private bool exibirOpcoes = false;
+
+    private void OnAlimentoExistenteSelected(ChangeEventArgs e)
+    {
+        // Preenche com dados mock para demonstração de alteração
+        if (!string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            nomeAlimento = "Arroz";
+            unidadeMedida = "KG";
+        }
+    }
+}
+
+<style>
+    .subtitle {
+        display: block;
+        color: #666;
+        margin-top: -8px;
+        margin-bottom: 16px;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #000;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+</style>

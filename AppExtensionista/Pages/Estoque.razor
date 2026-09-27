@@ -1,0 +1,185 @@
+﻿@page "/estoque"
+
+<div class="mobile-container pb-60">
+    <div class="header">
+        <h2>(Logo) - Estoque</h2>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="title">Alimentos</span>
+            <span class="value">20</span>
+        </div>
+        <div class="stat-item">
+            <span class="title">Vencidos</span>
+            <span class="value text-danger">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="title">Descartados</span>
+            <span class="value">0</span>
+        </div>
+    </div>
+
+    <div class="search-box">
+        <input type="text" placeholder="Text field in empty state" @bind="termoPesquisa" />
+        <button class="btn-search">Pesquisar</button>
+    </div>
+
+    <div class="accordion-list">
+        @foreach (var grupo in gruposEstoque)
+        {
+            <div class="accordion-item">
+                <div class="accordion-header" @onclick="() => ToggleGrupo(grupo.Id)">
+                    <span>@(grupo.Aberto ? "▲" : "▼") @grupo.Nome - @grupo.QuantidadeTotal</span>
+                </div>
+
+                @if (grupo.Aberto)
+                {
+                    <div class="accordion-body">
+                        @foreach (var item in grupo.Itens)
+                        {
+                            <div class="item-row">
+                                <div class="item-info">
+                                    <span>DT Vencimento - @item.Quantidade - @item.Marca</span>
+                                </div>
+                                <div class="item-actions">
+                                    <button class="btn-icon">⚙</button>
+                                    <button class="btn-icon">✕</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<AppExtensionista.Shared.BottomNav OnAbrirOpcoes="() => exibirOpcoes = true" />
+
+@if (exibirOpcoes)
+{
+    <AppExtensionista.Shared.OpcoesModal OnFechar="() => exibirOpcoes = false" />
+}
+
+@code {
+    private string termoPesquisa = "";
+    private bool exibirOpcoes = false;
+
+    private List<GrupoEstoqueMock> gruposEstoque = new()
+    {
+        new GrupoEstoqueMock { Id = 1, Nome = "Alimento (Grupado)", QuantidadeTotal = "Quantidade", Aberto = true,
+            Itens = new() { new() { Quantidade = "Quantidade", Marca = "Marca" }, new() { Quantidade = "Quantidade", Marca = "Marca" } } },
+        new GrupoEstoqueMock { Id = 2, Nome = "Alimento (Grupado)", QuantidadeTotal = "Quantidade", Aberto = false },
+        new GrupoEstoqueMock { Id = 3, Nome = "Alimento (Grupado)", QuantidadeTotal = "Quantidade", Aberto = false }
+    };
+
+    private void ToggleGrupo(int id)
+    {
+        var g = gruposEstoque.FirstOrDefault(x => x.Id == id);
+        if (g != null) g.Aberto = !g.Aberto;
+    }
+
+    public class GrupoEstoqueMock
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; } = "";
+        public string QuantidadeTotal { get; set; } = "";
+        public bool Aberto { get; set; }
+        public List<ItemEstoqueMock> Itens { get; set; } = new();
+    }
+
+    public class ItemEstoqueMock
+    {
+        public string Quantidade { get; set; } = "";
+        public string Marca { get; set; } = "";
+    }
+}
+
+<style>
+    .pb-60 {
+        padding-bottom: 70px;
+    }
+
+    .stats-bar {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 15px;
+        background: #f5f5f5;
+        padding: 10px;
+        border-radius: 6px;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+        .stat-item .title {
+            display: block;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .stat-item .value {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+    .search-box {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 15px;
+    }
+
+        .search-box input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+    .btn-search {
+        background: #1976d2;
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .accordion-item {
+        border: 1px solid #000;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        overflow: hidden;
+    }
+
+    .accordion-header {
+        background: #eee;
+        padding: 10px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .accordion-body {
+        padding: 8px;
+        background: #fff;
+    }
+
+    .item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        padding: 6px 0;
+        font-size: 12px;
+    }
+
+    .btn-icon {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        margin-left: 4px;
+    }
+</style>
