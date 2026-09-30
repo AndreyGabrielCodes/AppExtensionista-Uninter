@@ -1,4 +1,7 @@
 ﻿@page "/"
+@using AppExtensionista.ViewModels
+@using AppExtensionista.Services
+@inject IUsuarioService UsuarioService
 @inject NavigationManager Navigation
 
 <div class="mobile-container login-page">
@@ -9,46 +12,53 @@
 
     <div class="actions">
         <button class="btn btn-primary btn-block" @onclick="AbrirModalLogin">Logar</button>
-        <button class="btn btn-outline btn-block" @onclick="AbrirModalCriar">Criar Usuario</button>
+        <button class="btn btn-outline btn-block" @onclick="AbrirModalCriar">Criar Usuário</button>
     </div>
 
     @if (modalAtual != ModalTipo.Nenhum)
     {
         <div class="modal-overlay">
             <div class="modal-card">
-                <h3>Usuário</h3>
+                <h3>@(modalAtual == ModalTipo.Login ? "Entrar no Sistema" : "Novo Usuário")</h3>
+
+                @if (!string.IsNullOrEmpty(mensagemErro))
+                {
+                    <div class="alert-error">
+                        @mensagemErro
+                    </div>
+                }
 
                 <div class="form-group">
                     <label>Login:</label>
-                    <input type="text" class="form-control" @bind="usuarioForm.Login" />
+                    <input type="text" class="form-control" placeholder="Digite seu login" @bind="usuarioForm.Login" />
                 </div>
 
                 @if (modalAtual == ModalTipo.CriarUsuario)
                 {
                     <div class="form-group">
                         <label>Nome:</label>
-                        <input type="text" class="form-control" @bind="usuarioForm.Nome" />
+                        <input type="text" class="form-control" placeholder="Digite seu nome completo" @bind="usuarioForm.Nome" />
                     </div>
                 }
 
                 <div class="form-group">
                     <label>Senha:</label>
-                    <input type="password" class="form-control" @bind="usuarioForm.Senha" />
+                    <input type="password" class="form-control" placeholder="Digite sua senha" @bind="usuarioForm.Senha" />
                 </div>
 
                 @if (modalAtual == ModalTipo.CriarUsuario)
                 {
                     <div class="form-group">
                         <label>Dias Alerta Vencimento:</label>
-                        <input type="number" class="form-control" @bind="usuarioForm.DiasAlerta" />
+                        <input type="number" class="form-control" min="1" max="90" @bind="usuarioForm.DiasAlertaVencimento" />
                     </div>
                 }
 
                 <div class="modal-actions">
-                    <button class="btn btn-dark" @onclick="ConfirmarAcao">
-                        @(modalAtual == ModalTipo.Login ? "Entrar" : "Salvar")
+                    <button class="btn btn-dark" @onclick="ConfirmarAcao" disabled="@carregando">
+                        @(carregando ? "Aguarde..." : (modalAtual == ModalTipo.Login ? "Entrar" : "Salvar"))
                     </button>
-                    <button class="btn btn-light" @onclick="FecharModal">Voltar</button>
+                    <button class="btn btn-light" @onclick="FecharModal" disabled="@carregando">Voltar</button>
                 </div>
             </div>
         </div>
@@ -58,37 +68,90 @@
 @code {
     private enum ModalTipo { Nenhum, Login, CriarUsuario }
     private ModalTipo modalAtual = ModalTipo.Nenhum;
-    private UsuarioModelForm usuarioForm = new();
+
+    private UsuarioModalViewModel usuarioForm = new();
+    private string mensagemErro = "";
+    private bool carregando = false;
 
     private void AbrirModalLogin()
     {
-        usuarioForm = new UsuarioModelForm();
+        usuarioForm = new UsuarioModalViewModel();
+        mensagemErro = "";
         modalAtual = ModalTipo.Login;
     }
 
     private void AbrirModalCriar()
     {
-        usuarioForm = new UsuarioModelForm();
+        usuarioForm = new UsuarioModalViewModel();
+        mensagemErro = "";
         modalAtual = ModalTipo.CriarUsuario;
     }
 
     private void FecharModal()
     {
+        if (carregando) return;
         modalAtual = ModalTipo.Nenhum;
+        mensagemErro = "";
     }
 
-    private void ConfirmarAcao()
+    private async Task ConfirmarAcao()
     {
-        modalAtual = ModalTipo.Nenhum;
-        Navigation.NavigateTo("/estoque");
-    }
+        mensagemErro = "";
 
-    public class UsuarioModelForm
-    {
-        public string Login { get; set; } = "";
-        public string Nome { get; set; } = "";
-        public string Senha { get; set; } = "";
-        public int DiasAlerta { get; set; } = 7;
+        // Validações básicas de tela
+        if (string.IsNullOrWhiteSpace(usuarioForm.Login) || string.IsNullOrWhiteSpace(usuarioForm.Senha))
+        {
+            mensagemErro = "Preencha o login e a senha.";
+            return;
+        }
+
+        if (modalAtual == ModalTipo.CriarUsuario && string.IsNullOrWhiteSpace(usuarioForm.Nome))
+        {
+            mensagemErro = "Preencha o seu nome.";
+            return;
+        }
+
+        carregando = true;
+
+        try
+        {
+            if (modalAtual == ModalTipo.Login)
+            {
+                var loginSucesso = await UsuarioService.AutenticarAsync(usuarioForm.Login, usuarioForm.Senha);
+
+                if (loginSucesso != null)
+                {
+                    modalAtual = ModalTipo.Nenhum;
+                    Navigation.NavigateTo("/estoque");
+                }
+                else
+                {
+                    mensagemErro = "Login ou senha inválidos.";
+                }
+            }
+            else if (modalAtual == ModalTipo.CriarUsuario)
+            {
+                var usuarioCriado = await UsuarioService.CriarUsuarioAsync(usuarioForm);
+
+                if (usuarioCriado != null)
+                {
+                    modalAtual = ModalTipo.Nenhum;
+                    Navigation.NavigateTo("/estoque");
+                }
+                else
+                {
+                    mensagemErro = "Não foi possível criar o usuário. Tente outro login.";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            mensagemErro = $"Ocorreu um erro: {ex.Message}";
+        }
+        finally
+        {
+            carregando = false;
+        }
     }
 }
 
@@ -125,7 +188,13 @@
         cursor: pointer;
         border: 1px solid transparent;
         text-align: center;
+        transition: opacity 0.2s;
     }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
     .btn-block {
         width: 100%;
@@ -153,6 +222,17 @@
     .btn-light {
         background: #e0e0e0;
         color: #000;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #842029;
+        border: 1px solid #f5c2c7;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-bottom: 12px;
+        text-align: center;
     }
 
     .modal-overlay {

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
 
 namespace AppExtensionista.Enums
 {
@@ -8,6 +9,9 @@ namespace AppExtensionista.Enums
         Descarte = 1,
 
         [Display(Name = "Consumo")]
-        Consumo = 2
+        Consumo = 2,
+
+        [Display(Name = "Criado Incorretamente")]
+        CriadoIncorretamente = 3
     }
 }

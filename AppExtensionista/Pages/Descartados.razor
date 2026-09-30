@@ -1,4 +1,7 @@
 ﻿@page "/descartados"
+@using AppExtensionista.ViewModels
+@using AppExtensionista.Services
+@inject IDescarteService DescarteService
 
 <div class="mobile-container pb-60">
     <div class="header">
@@ -6,51 +9,67 @@
         <small class="subtitle">Descarte/Consumo de produtos</small>
     </div>
 
-    <div class="total-box">
-        <span>Total Descartados/Consumidos</span>
-        <strong>0</strong>
-    </div>
+    @if (viewModel != null)
+    {
+        <div class="total-box">
+            <span>Total Registros Descartados/Consumidos</span>
+            <strong>@viewModel.TotalDescartadosConsumidos</strong>
+        </div>
+    }
 
     <div class="search-box">
         <input type="text" placeholder="Digite um alimento ou marca" @bind="termoPesquisa" />
-        <button class="btn-search">Pesquisar</button>
+        <button class="btn-search" @onclick="Pesquisar">Pesquisar</button>
     </div>
 
     <div class="accordion-list">
-        @foreach (var grupo in gruposDescartados)
+        @if (viewModel == null)
         {
-            <div class="accordion-item">
-                <div class="accordion-header" @onclick="() => ToggleGrupo(grupo.Id)">
-                    <span>@(grupo.Aberto ? "▲" : "▼") @grupo.Nome - @grupo.QuantidadeTotal</span>
-                </div>
+            <p>Carregando descartes...</p>
+        }
+        else if (!viewModel.Agrupamentos.Any())
+        {
+            <p>Nenhum item descartado encontrado.</p>
+        }
+        else
+        {
+            @foreach (var grupo in viewModel.Agrupamentos)
+            {
+                bool isAberto = gruposAbertos.GetValueOrDefault(grupo.NomeAlimento);
 
-                @if (grupo.Aberto)
-                {
-                    <div class="accordion-body">
-                        @foreach (var item in grupo.Itens)
-                        {
-                            <div class="item-row" @onclick="() => ExibirMotivo(item)">
-                                <span>DT Descarte - @item.Quantidade - @item.Marca - @item.Motivo</span>
-                            </div>
-                        }
+                <div class="accordion-item">
+                    <div class="accordion-header" @onclick="() => ToggleGrupo(grupo.NomeAlimento)">
+                        <span>@(isAberto ? "▲" : "▼") @grupo.NomeAlimento - @grupo.QuantidadeTotalDescartada @grupo.UnidadeMedidaSigla</span>
                     </div>
-                }
-            </div>
+
+                    @if (isAberto)
+                    {
+                        <div class="accordion-body">
+                            @foreach (var item in grupo.Itens)
+                            {
+                                <div class="item-row" @onclick="() => ExibirMotivo(item.IdRegistroDescarte)">
+                                    <span>@item.DataDescarte.ToString("dd/MM/yyyy") - @item.Quantidade @grupo.UnidadeMedidaSigla - @item.Marca - @item.TipoDescarte</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
         }
     </div>
 
-    @if (itemSelecionado != null)
+    @if (detalheMotivo != null)
     {
         <div class="modal-overlay">
             <div class="modal-card">
                 <h3>Motivo Descarte</h3>
-                <p><strong>Tipo descarte :</strong> Consumo/Descarte</p>
+                <p><strong>Tipo descarte:</strong> @detalheMotivo.TipoDescarte</p>
                 <div class="desc-box">
                     <label>Descrição:</label>
-                    <p>Descartado pois já estava mofando</p>
+                    <p>@(string.IsNullOrWhiteSpace(detalheMotivo.DescricaoMotivo) ? "Nenhuma descrição informada." : detalheMotivo.DescricaoMotivo)</p>
                 </div>
                 <div class="modal-actions align-right">
-                    <button class="btn btn-light" @onclick="() => itemSelecionado = null">Voltar</button>
+                    <button class="btn btn-light" @onclick="() => detalheMotivo = null">Voltar</button>
                 </div>
             </div>
         </div>
@@ -62,50 +81,6 @@
 @if (exibirOpcoes)
 {
     <AppExtensionista.Shared.OpcoesModal OnFechar="() => exibirOpcoes = false" />
-}
-
-@code {
-    private string termoPesquisa = "";
-    private bool exibirOpcoes = false;
-    private ItemDescarteMock? itemSelecionado;
-
-    private List<GrupoDescarteMock> gruposDescartados = new()
-    {
-        new GrupoDescarteMock { Id = 1, Nome = "Alimento (Grupado)", QuantidadeTotal = "Quantidade", Aberto = true,
-            Itens = new() {
-                new() { Quantidade = "Quantidade", Marca = "Marca", Motivo = "Motivo" },
-                new() { Quantidade = "Quantidade", Marca = "Marca", Motivo = "Motivo" }
-            }
-        },
-        new GrupoDescarteMock { Id = 2, Nome = "Alimento (Grupado)", QuantidadeTotal = "Quantidade", Aberto = false }
-    };
-
-    private void ToggleGrupo(int id)
-    {
-        var g = gruposDescartados.FirstOrDefault(x => x.Id == id);
-        if (g != null) g.Aberto = !g.Aberto;
-    }
-
-    private void ExibirMotivo(ItemDescarteMock item)
-    {
-        itemSelecionado = item;
-    }
-
-    public class GrupoDescarteMock
-    {
-        public int Id { get; set; }
-        public string Nome { get; set; } = "";
-        public string QuantidadeTotal { get; set; } = "";
-        public bool Aberto { get; set; }
-        public List<ItemDescarteMock> Itens { get; set; } = new();
-    }
-
-    public class ItemDescarteMock
-    {
-        public string Quantidade { get; set; } = "";
-        public string Marca { get; set; } = "";
-        public string Motivo { get; set; } = "";
-    }
 }
 
 <style>
@@ -249,3 +224,38 @@
         color: #000;
     }
 </style>
+
+@code {
+    private string termoPesquisa = "";
+    private bool exibirOpcoes = false;
+
+    private DescartadosIndexViewModel? viewModel;
+    private Dictionary<string, bool> gruposAbertos = new();
+    private MotivoDescarteModalViewModel? detalheMotivo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarDados();
+    }
+
+    private async Task CarregarDados()
+    {
+        viewModel = await DescarteService.ObterDescartadosAgrupadosAsync(termoPesquisa);
+    }
+
+    private async Task Pesquisar()
+    {
+        await CarregarDados();
+    }
+
+    private void ToggleGrupo(string nomeGrupo)
+    {
+        bool currentState = gruposAbertos.GetValueOrDefault(nomeGrupo);
+        gruposAbertos[nomeGrupo] = !currentState;
+    }
+
+    private async Task ExibirMotivo(int idRegistroDescarte)
+    {
+        detalheMotivo = await DescarteService.ObterMotivoDescarteAsync(idRegistroDescarte);
+    }
+}

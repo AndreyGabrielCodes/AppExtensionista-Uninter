@@ -1,4 +1,9 @@
 ﻿@page "/estoque"
+@using AppExtensionista.ViewModels
+@using AppExtensionista.Services
+@using AppExtensionista.Enums
+@inject IEstoqueService EstoqueService
+@inject IDescarteService DescarteService
 @inject NavigationManager Navigation
 
 <div class="mobile-container pb-60">
@@ -6,84 +11,106 @@
         <h2>(Logo) - Estoque</h2>
     </div>
 
-    <div class="stats-bar">
-        <div class="stat-item">
-            <span class="title">Alimentos</span>
-            <span class="value">20</span>
+    @if (viewModel != null)
+    {
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="title">Cadastrados</span>
+                <span class="value">@viewModel.TotalAlimentosCadastrados</span>
+            </div>
+            <div class="stat-item">
+                <span class="title">Vencidos</span>
+                <span class="value text-danger">@viewModel.TotalVencidos</span>
+            </div>
+            <div class="stat-item">
+                <span class="title">Descartados</span>
+                <span class="value">@viewModel.TotalDescartados</span>
+            </div>
         </div>
-        <div class="stat-item">
-            <span class="title">Vencidos</span>
-            <span class="value text-danger">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="title">Descartados</span>
-            <span class="value">0</span>
-        </div>
-    </div>
+    }
 
     <div class="search-box">
         <input type="text" placeholder="Digite um alimento ou marca" @bind="termoPesquisa" />
-        <button class="btn-search">Pesquisar</button>
+        <button class="btn-search" @onclick="Pesquisar">Pesquisar</button>
     </div>
 
     <div class="accordion-list">
-        @foreach (var grupo in gruposEstoque)
+        @if (viewModel == null)
         {
-            <div class="accordion-item">
-                <div class="accordion-header" @onclick="() => ToggleGrupo(grupo.Id)">
-                    <span>@(grupo.Aberto ? "▲" : "▼") @grupo.Nome - @grupo.QuantidadeTotal</span>
-                </div>
+            <p>Carregando estoque...</p>
+        }
+        else if (!viewModel.Agrupamentos.Any())
+        {
+            <p>Nenhum item encontrado no estoque.</p>
+        }
+        else
+        {
+            @foreach (var grupo in viewModel.Agrupamentos)
+            {
+                bool isAberto = gruposAbertos.GetValueOrDefault(grupo.IdAlimento);
 
-                @if (grupo.Aberto)
-                {
-                    <div class="accordion-body">
-                        @foreach (var item in grupo.Itens)
-                        {
-                            <div class="item-row">
-                                <div class="item-info">
-                                    <span>DT Vencimento - @item.Quantidade - @item.Marca</span>
-                                </div>
-                                <div class="item-actions">
-                                    <button class="btn-icon" title="Editar" @onclick="() => EditarItem(item)">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <circle cx="12" cy="12" r="3"></circle>
-                                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                                        </svg>
-                                    </button>
-                                    <button class="btn-icon btn-danger" title="Excluir/Descartar" @onclick="() => AbrirModalDescarte(item)">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        }
+                <div class="accordion-item">
+                    <div class="accordion-header" @onclick="() => ToggleGrupo(grupo.IdAlimento)">
+                        <span>@(isAberto ? "▲" : "▼") @grupo.NomeAlimento - @grupo.QuantidadeTotalSomada @grupo.UnidadeMedidaSigla</span>
                     </div>
-                }
-            </div>
+
+                    @if (isAberto)
+                    {
+                        <div class="accordion-body">
+                            @foreach (var item in grupo.Itens)
+                            {
+                                <div class="item-row">
+                                    <div class="item-info">
+                                        <span>@item.DataValidade.ToString("dd/MM/yyyy") - @item.Quantidade @grupo.UnidadeMedidaSigla - @item.Marca</span>
+                                    </div>
+                                    <div class="item-actions">
+                                        <button class="btn-icon" title="Editar" @onclick="() => EditarItem(item.IdEstoque)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="btn-icon btn-danger" title="Excluir/Descartar" @onclick="() => AbrirModalDescarte(item)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
         }
     </div>
 
-    @if (exibirModalDescarte)
+    @if (exibirModalDescarte && descarteModel != null)
     {
         <div class="modal-overlay">
             <div class="modal-card">
                 <h3>Motivo Descarte</h3>
 
                 <div class="form-group">
+                    <label>Quantidade a Descartar:</label>
+                    <input type="number" step="0.01" class="form-control" @bind="descarteModel.QuantidadeDescartar" max="@quantidadeMaximaItem" />
+                    <small>Disponível: @quantidadeMaximaItem</small>
+                </div>
+
+                <div class="form-group">
                     <label>Tipo descarte:</label>
-                    <select class="form-control" @bind="tipoDescarte">
-                        <option value="Consumo/Descarte">Consumo/Descarte</option>
-                        <option value="Vencimento">Vencimento</option>
-                        <option value="Estragado/Mofado">Estragado/Mofado</option>
-                        <option value="Outro">Outro</option>
+                    <select class="form-control" @bind="descarteModel.TipoDescarte">
+                        @foreach (DescarteEnum tipo in Enum.GetValues(typeof(DescarteEnum)))
+                        {
+                            <option value="@tipo">@tipo.ToString()</option>
+                        }
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label>Descrição / Motivo:</label>
-                    <textarea class="form-control" rows="3" placeholder="Informe o motivo do descarte..." @bind="descricaoDescarte"></textarea>
+                    <textarea class="form-control" rows="3" placeholder="Informe o motivo do descarte..." @bind="descarteModel.DescricaoMotivo"></textarea>
                 </div>
 
                 <div class="modal-actions">
@@ -100,68 +127,6 @@
 @if (exibirOpcoes)
 {
     <AppExtensionista.Shared.OpcoesModal OnFechar="() => exibirOpcoes = false" />
-}
-
-@code {
-    private string termoPesquisa = "";
-    private bool exibirOpcoes = false;
-    private bool exibirModalDescarte = false;
-    private string tipoDescarte = "Consumo/Descarte";
-    private string descricaoDescarte = "";
-    private ItemEstoqueMock? itemSelecionado;
-
-    private List<GrupoEstoqueMock> gruposEstoque = new()
-    {
-        new GrupoEstoqueMock { Id = 1, Nome = "Alimento (Grupado)", QuantidadeTotal = "Quantidade", Aberto = true,
-            Itens = new() { new() { Quantidade = "Quantidade", Marca = "Marca" }, new() { Quantidade = "Quantidade", Marca = "Marca" } } },
-        new GrupoEstoqueMock { Id = 2, Nome = "Alimento (Grupado)", QuantidadeTotal = "Quantidade", Aberto = false },
-        new GrupoEstoqueMock { Id = 3, Nome = "Alimento (Grupado)", QuantidadeTotal = "Quantidade", Aberto = false }
-    };
-
-    private void ToggleGrupo(int id)
-    {
-        var g = gruposEstoque.FirstOrDefault(x => x.Id == id);
-        if (g != null) g.Aberto = !g.Aberto;
-    }
-
-    private void EditarItem(ItemEstoqueMock item)
-    {
-        Navigation.NavigateTo("/criar-alimento");
-    }
-
-    private void AbrirModalDescarte(ItemEstoqueMock item)
-    {
-        itemSelecionado = item;
-        descricaoDescarte = "";
-        exibirModalDescarte = true;
-    }
-
-    private void FecharModalDescarte()
-    {
-        exibirModalDescarte = false;
-        itemSelecionado = null;
-    }
-
-    private void ConfirmarDescarte()
-    {
-        exibirModalDescarte = false;
-        Navigation.NavigateTo("/descartados");
-    }
-
-    public class GrupoEstoqueMock
-    {
-        public int Id { get; set; }
-        public string Nome { get; set; } = "";
-        public string QuantidadeTotal { get; set; } = "";
-        public bool Aberto { get; set; }
-        public List<ItemEstoqueMock> Itens { get; set; } = new();
-    }
-
-    public class ItemEstoqueMock
-    {
-        public string Quantidade { get; set; } = "";
-        public string Marca { get; set; } = "";
-    }
 }
 
 <style>
@@ -375,3 +340,73 @@
         color: #000;
     }
 </style>
+
+@code {
+    private int idUsuarioLogado = 1; // Tem que mudar depois para pegar o id do usuário atual
+
+    private string termoPesquisa = "";
+    private bool exibirOpcoes = false;
+    private bool exibirModalDescarte = false;
+
+    private EstoqueIndexViewModel? viewModel;
+    private Dictionary<int, bool> gruposAbertos = new();
+
+    private RegistrarDescarteModalViewModel? descarteModel;
+    private decimal quantidadeMaximaItem = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarDados();
+    }
+
+    private async Task CarregarDados()
+    {
+        viewModel = await EstoqueService.ObterEstoqueAgrupadoAsync(termoPesquisa);
+    }
+
+    private async Task Pesquisar()
+    {
+        await CarregarDados();
+    }
+
+    private void ToggleGrupo(int idAlimento)
+    {
+        bool currentState = gruposAbertos.GetValueOrDefault(idAlimento);
+        gruposAbertos[idAlimento] = !currentState;
+    }
+
+    private void EditarItem(int idEstoque)
+    {
+        Navigation.NavigateTo($"/criar-alimento/{idEstoque}");
+    }
+
+    private void AbrirModalDescarte(EstoqueItemDetalheViewModel item)
+    {
+        quantidadeMaximaItem = item.Quantidade;
+        descarteModel = new RegistrarDescarteModalViewModel
+        {
+            IdEstoque = item.IdEstoque,
+            QuantidadeDescartar = item.Quantidade, // Por padrão, sugere descartar/consumir tudo
+            TipoDescarte = DescarteEnum.Consumo 
+        };
+        exibirModalDescarte = true;
+    }
+
+    private void FecharModalDescarte()
+    {
+        exibirModalDescarte = false;
+        descarteModel = null;
+    }
+
+    private async Task ConfirmarDescarte()
+    {
+        if (descarteModel != null)
+        {
+            await DescarteService.RegistrarDescarteAsync(descarteModel, idUsuarioLogado);
+            exibirModalDescarte = false;
+
+            // Recarrega os dados após descartar/consumir
+            await CarregarDados();
+        }
+    }
+}
