@@ -28,6 +28,9 @@ namespace AppExtensionista.Services
             if (estoque == null)
                 throw new InvalidOperationException("Item do estoque não encontrado.");
 
+            if (model.QuantidadeDescartar <= 0)
+                throw new InvalidOperationException("A quantidade a descartar precisa ser maior que zero");
+
             if (model.QuantidadeDescartar > estoque.Quantidade)
                 throw new InvalidOperationException("A quantidade a descartar é maior do que a disponível em estoque.");
 
