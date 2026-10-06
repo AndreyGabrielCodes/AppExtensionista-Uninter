@@ -1,4 +1,5 @@
 ﻿@page "/estoque"
+@using AppExtensionista.Extensions
 @using AppExtensionista.ViewModels
 @using AppExtensionista.Services
 @using AppExtensionista.Enums
@@ -95,15 +96,15 @@
                 <div class="form-group">
                     <label>Quantidade a Descartar:</label>
                     <input type="number" step="0.01" class="form-control" @bind="descarteModel.QuantidadeDescartar" max="@quantidadeMaximaItem" />
-                    <small>Disponível: @quantidadeMaximaItem</small>
+                    <small>Disponível: @quantidadeMaximaItem @unidadeMedidaSigla </small>
                 </div>
 
                 <div class="form-group">
                     <label>Tipo descarte:</label>
                     <select class="form-control" @bind="descarteModel.TipoDescarte">
-                        @foreach (DescarteEnum tipo in Enum.GetValues(typeof(DescarteEnum)))
+                        @foreach (DescarteEnum descarte in Enum.GetValues(typeof(DescarteEnum)))
                         {
-                            <option value="@tipo">@tipo.ToString()</option>
+                            <option value="@descarte">@descarte.ObterSigla()</option>
                         }
                     </select>
                 </div>
@@ -353,6 +354,7 @@
 
     private RegistrarDescarteModalViewModel? descarteModel;
     private decimal quantidadeMaximaItem = 0;
+    private string? unidadeMedidaSigla = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -390,6 +392,7 @@
             TipoDescarte = DescarteEnum.Consumo 
         };
         exibirModalDescarte = true;
+        unidadeMedidaSigla = item.UnidadeMedidaSigla;
     }
 
     private void FecharModalDescarte()

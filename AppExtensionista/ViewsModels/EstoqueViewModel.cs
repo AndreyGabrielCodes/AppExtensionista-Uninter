@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AppExtensionista.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace AppExtensionista.ViewModels
@@ -35,5 +36,6 @@ namespace AppExtensionista.ViewModels
         public decimal Quantidade { get; set; }
         public string Marca { get; set; }
         public bool IsVencido => DataValidade.Date < DateTime.Today;
+        public string? UnidadeMedidaSigla { get; set; }
     }
 }

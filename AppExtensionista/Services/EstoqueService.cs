@@ -55,7 +55,8 @@ namespace AppExtensionista.Services
                         IdEstoque = i.IdEstoque,
                         Marca = i.MarcaAlimento,
                         Quantidade = i.Quantidade,
-                        DataValidade = i.DataValidade
+                        DataValidade = i.DataValidade,
+                        UnidadeMedidaSigla = g.Key.UnidadeMedida.ObterSigla()
                     }).OrderBy(i => i.DataValidade).ToList()
                 }).ToList();
 
