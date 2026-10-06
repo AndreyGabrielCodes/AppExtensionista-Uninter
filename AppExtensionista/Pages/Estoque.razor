@@ -93,6 +93,13 @@
             <div class="modal-card">
                 <h3>Motivo Descarte</h3>
 
+                @if (!string.IsNullOrEmpty(mensagemErro))
+                {
+                    <div class="alert-error">
+                        @mensagemErro
+                    </div>
+                }
+
                 <div class="form-group">
                     <label>Quantidade a Descartar:</label>
                     <input type="number" step="0.01" class="form-control" @bind="descarteModel.QuantidadeDescartar" max="@quantidadeMaximaItem" />
@@ -254,6 +261,17 @@
             background: #ffebee;
         }
 
+    .alert-error {
+        background-color: #f8d7da;
+        color: #842029;
+        border: 1px solid #f5c2c7;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+
     .modal-overlay {
         position: fixed;
         inset: 0;
@@ -348,6 +366,7 @@
     private string termoPesquisa = "";
     private bool exibirOpcoes = false;
     private bool exibirModalDescarte = false;
+    private string mensagemErro = "";
 
     private EstoqueIndexViewModel? viewModel;
     private Dictionary<int, bool> gruposAbertos = new();
@@ -363,11 +382,13 @@
 
     private async Task CarregarDados()
     {
+        mensagemErro = "";
         viewModel = await EstoqueService.ObterEstoqueAgrupadoAsync(termoPesquisa);
     }
 
     private async Task Pesquisar()
     {
+        mensagemErro = "";
         await CarregarDados();
     }
 
@@ -384,6 +405,7 @@
 
     private void AbrirModalDescarte(EstoqueItemDetalheViewModel item)
     {
+        mensagemErro = "";
         quantidadeMaximaItem = item.Quantidade;
         descarteModel = new RegistrarDescarteModalViewModel
         {
@@ -397,19 +419,29 @@
 
     private void FecharModalDescarte()
     {
+        mensagemErro = "";
         exibirModalDescarte = false;
         descarteModel = null;
     }
 
     private async Task ConfirmarDescarte()
     {
-        if (descarteModel != null)
+        try
         {
-            await DescarteService.RegistrarDescarteAsync(descarteModel, idUsuarioLogado);
-            exibirModalDescarte = false;
+            if (descarteModel != null)
+            {
+                await DescarteService.RegistrarDescarteAsync(descarteModel, idUsuarioLogado);
+                exibirModalDescarte = false;
 
-            // Recarrega os dados após descartar/consumir
-            await CarregarDados();
+                // Recarrega os dados após descartar/consumir
+                await CarregarDados();
+            }
         }
+        catch (Exception ex)
+        {
+            mensagemErro = $"Ocorreu um erro: {ex.Message}";
+        }
+
+        
     }
 }
