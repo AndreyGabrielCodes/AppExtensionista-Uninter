@@ -77,6 +77,10 @@ namespace AppExtensionista.Services
 
         public async Task SalvarOuAtualizarItemEstoqueAsync(AlimentoCadastroViewModel model, int idUsuarioLogado)
         {
+
+            if (string.IsNullOrEmpty(model.NomeAlimento))
+            throw new InvalidOperationException("Nome do alimento precisa ser preenchido");
+
             // Obter/Criar o Alimento pai
             var alimento = await _alimentoService.ObterOuCriarAlimentoAsync(model.NomeAlimento, model.UnidadeMedida, idUsuarioLogado);
 
