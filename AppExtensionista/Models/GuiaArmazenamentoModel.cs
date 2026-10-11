@@ -20,13 +20,6 @@ namespace AppExtensionista.Models
         public virtual AlimentoModel Alimento { get; set; }
 
         [Required]
-        [Column("ID_USUARIO_RESPONSAVEL")]
-        public int IdUsuarioResponsavel { get; set; }
-
-        [ForeignKey(nameof(IdUsuarioResponsavel))]
-        public virtual UsuarioModel UsuarioResponsavel { get; set; }
-
-        [Required]
         [Column("TITULO")]
         public string Titulo { get; set; }
 

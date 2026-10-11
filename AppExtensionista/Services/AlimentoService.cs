@@ -8,7 +8,7 @@ namespace AppExtensionista.Services
     public interface IAlimentoService
     {
         Task<List<AlimentoOpcaoSelectViewModel>> ObterAlimentosExistentesOptionsAsync();
-        Task<AlimentoModel> ObterOuCriarAlimentoAsync(string nome, Enums.UnidadeMedidaEnum unidadeMedida, int idUsuarioCriador);
+        Task<AlimentoModel> ObterOuCriarAlimentoAsync(string nome, Enums.UnidadeMedidaEnum unidadeMedida);
         Task<AlimentoModel?> ObterPorIdAsync(int idAlimento);
     }
 
@@ -33,7 +33,7 @@ namespace AppExtensionista.Services
                 .ToListAsync();
         }
 
-        public async Task<AlimentoModel> ObterOuCriarAlimentoAsync(string nome, Enums.UnidadeMedidaEnum unidadeMedida, int idUsuarioCriador)
+        public async Task<AlimentoModel> ObterOuCriarAlimentoAsync(string nome, Enums.UnidadeMedidaEnum unidadeMedida)
         {
             var alimentoExistente = await _context.Alimentos
                 .FirstOrDefaultAsync(a => a.Nome.ToLower() == nome.ToLower() && a.UnidadeMedida == unidadeMedida);
@@ -44,8 +44,7 @@ namespace AppExtensionista.Services
             var novoAlimento = new AlimentoModel
             {
                 Nome = nome,
-                UnidadeMedida = unidadeMedida,
-                IdUsuarioCriador = idUsuarioCriador
+                UnidadeMedida = unidadeMedida
             };
 
             _context.Alimentos.Add(novoAlimento);

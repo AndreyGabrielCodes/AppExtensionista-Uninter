@@ -13,13 +13,6 @@ namespace AppExtensionista.Models
         public int IdAlimento { get; set; }
 
         [Required]
-        [Column("ID_USUARIO_CRIADOR")]
-        public int IdUsuarioCriador { get; set; }
-
-        [ForeignKey(nameof(IdUsuarioCriador))]
-        public virtual UsuarioModel UsuarioCriador { get; set; }
-
-        [Required]
         [Column("NOME")]
         public string Nome { get; set; }
 

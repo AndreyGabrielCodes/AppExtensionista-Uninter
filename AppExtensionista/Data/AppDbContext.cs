@@ -7,7 +7,7 @@ namespace AppExtensionista.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<UsuarioModel> Usuarios { get; set; }
+        public DbSet<AppSettingsModel> AppSettings { get; set; }
         public DbSet<AlimentoModel> Alimentos { get; set; }
         public DbSet<GuiaArmazenamentoModel> GuiasArmazenamento { get; set; }
         public DbSet<EstoqueModel> Estoques { get; set; }

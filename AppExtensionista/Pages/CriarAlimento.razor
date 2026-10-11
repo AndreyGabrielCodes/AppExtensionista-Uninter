@@ -163,9 +163,6 @@
 @code {
     [Parameter]
     public int? IdEstoque { get; set; }
-
-    private int idUsuarioLogado = 1; // Tem que mudar depois para pegar o id do usuário atual
-
     private bool exibirOpcoes = false;
     private bool salvando = false;
 
@@ -193,7 +190,7 @@
 
         try
         {
-            await EstoqueService.SalvarOuAtualizarItemEstoqueAsync(model, idUsuarioLogado);
+            await EstoqueService.SalvarOuAtualizarItemEstoqueAsync(model);
             Navigation.NavigateTo("/estoque");
         }
         finally

@@ -6,7 +6,7 @@ namespace AppExtensionista.ViewModels
     // ViewModel para o Pop-up exibido apenas uma vez logo após o login
     public class AlertaVencimentoPopUpViewModel
     {
-        public int DiasConfiguradosUsuario { get; set; }
+        public int DiasConfigurados { get; set; }
 
         // Lista de produtos que vencem até o limite de dias do alerta do usuário
         public List<ItemAlertaVencimentoViewModel> ItensAlerta { get; set; } = new();

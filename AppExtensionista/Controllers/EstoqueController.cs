@@ -14,13 +14,6 @@ namespace AppExtensionista.Controllers
             _estoqueService = estoqueService;
         }
 
-        private int ObterIdUsuarioLogado()
-        {
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-            return claim != null ? int.Parse(claim.Value) : 1;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Index(string? termoPesquisa)
         {
@@ -47,9 +40,7 @@ namespace AppExtensionista.Controllers
                 if (!ModelState.IsValid)
                     return Json(new { success = false, message = "Dados inválidos. Verifique os campos preenchidos." });
 
-                int idUsuario = ObterIdUsuarioLogado();
-
-                await _estoqueService.SalvarOuAtualizarItemEstoqueAsync(model, idUsuario);
+                await _estoqueService.SalvarOuAtualizarItemEstoqueAsync(model);
 
                 return Json(new { success = true, message = "Item salvo no estoque com sucesso!" });
             }
@@ -82,9 +73,7 @@ namespace AppExtensionista.Controllers
         {
             try
             {
-                int idUsuario = ObterIdUsuarioLogado();
-
-                var alertas = await _estoqueService.ObterAlertasVencimentoAsync(idUsuario);
+                var alertas = await _estoqueService.ObterAlertasVencimentoAsync();
 
                 return Json(new { success = true, data = alertas });
             }

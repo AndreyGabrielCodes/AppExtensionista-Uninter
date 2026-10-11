@@ -16,12 +16,6 @@ namespace AppExtensionista.Controllers
             _guiaService = guiaService;
         }
 
-        private int ObterIdUsuarioLogado()
-        {
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier);
-            return claim != null ? int.Parse(claim.Value) : 1;
-        }
-
         [HttpGet]
         public async Task<IActionResult> ObterPorAlimento(int idAlimento)
         {
@@ -50,8 +44,7 @@ namespace AppExtensionista.Controllers
                     return Json(new { success = false, message = "Formulário da guia possui campos pendentes." });
                 }
 
-                int idUsuario = ObterIdUsuarioLogado();
-                await _guiaService.SalvarOuAtualizarGuiaAsync(model, idUsuario);
+                await _guiaService.SalvarOuAtualizarGuiaAsync(model);
                 return Json(new { success = true, message = "Guia de armazenamento salva com sucesso!" });
             }
             catch (Exception ex)

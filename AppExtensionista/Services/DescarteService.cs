@@ -8,7 +8,7 @@ namespace AppExtensionista.Services
 {
     public interface IDescarteService
     {
-        Task RegistrarDescarteAsync(RegistrarDescarteModalViewModel model, int idUsuarioLogado);
+        Task RegistrarDescarteAsync(RegistrarDescarteModalViewModel model);
         Task<DescartadosIndexViewModel> ObterDescartadosAgrupadosAsync(string? termoPesquisa);
         Task<MotivoDescarteModalViewModel?> ObterMotivoDescarteAsync(int idRegistroDescarte);
     }
@@ -22,7 +22,7 @@ namespace AppExtensionista.Services
             _context = context;
         }
 
-        public async Task RegistrarDescarteAsync(RegistrarDescarteModalViewModel model, int idUsuarioLogado)
+        public async Task RegistrarDescarteAsync(RegistrarDescarteModalViewModel model)
         {
             var estoque = await _context.Estoques.FindAsync(model.IdEstoque);
             if (estoque == null)
@@ -47,7 +47,6 @@ namespace AppExtensionista.Services
             // Cria o registro de descarte utilizando o Enum diretamente
             var descarte = new RegistroDescarteModel
             {
-                IdUsuarioResponsavel = idUsuarioLogado,
                 IdEstoque = estoque.IdEstoque,
                 Quantidade = model.QuantidadeDescartar,
                 DataDescarte = DateTime.Now,

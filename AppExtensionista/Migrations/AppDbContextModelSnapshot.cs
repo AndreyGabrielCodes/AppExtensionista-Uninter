@@ -24,10 +24,6 @@ namespace AppExtensionista.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("ID_ALIMENTO");
 
-                    b.Property<int>("IdUsuarioCriador")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("ID_USUARIO_CRIADOR");
-
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("TEXT")
@@ -39,9 +35,23 @@ namespace AppExtensionista.Migrations
 
                     b.HasKey("IdAlimento");
 
-                    b.HasIndex("IdUsuarioCriador");
-
                     b.ToTable("ALIMENTO");
+                });
+
+            modelBuilder.Entity("AppExtensionista.Models.AppSettingsModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("ID_SETTINGS");
+
+                    b.Property<int>("DiasAlertaVencimento")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("DIAS_ALERTA_VENCIMENTO");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("APP_SETTINGS");
                 });
 
             modelBuilder.Entity("AppExtensionista.Models.EstoqueModel", b =>
@@ -59,10 +69,6 @@ namespace AppExtensionista.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("ID_ALIMENTO");
 
-                    b.Property<int>("IdUsuarioCriador")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("ID_USUARIO_CRIADOR");
-
                     b.Property<string>("MarcaAlimento")
                         .IsRequired()
                         .HasColumnType("TEXT")
@@ -79,8 +85,6 @@ namespace AppExtensionista.Migrations
                     b.HasKey("IdEstoque");
 
                     b.HasIndex("IdAlimento");
-
-                    b.HasIndex("IdUsuarioCriador");
 
                     b.ToTable("ESTOQUE");
                 });
@@ -109,10 +113,6 @@ namespace AppExtensionista.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("ID_ALIMENTO");
 
-                    b.Property<int>("IdUsuarioResponsavel")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("ID_USUARIO_RESPONSAVEL");
-
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasColumnType("TEXT")
@@ -121,8 +121,6 @@ namespace AppExtensionista.Migrations
                     b.HasKey("IdGuiaArmazenamento");
 
                     b.HasIndex("IdAlimento");
-
-                    b.HasIndex("IdUsuarioResponsavel");
 
                     b.ToTable("GUIA_ARMAZENAMENTO");
                 });
@@ -146,10 +144,6 @@ namespace AppExtensionista.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("ID_ESTOQUE");
 
-                    b.Property<int>("IdUsuarioResponsavel")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("ID_USUARIO_RESPONSAVEL");
-
                     b.Property<decimal>("Quantidade")
                         .HasColumnType("TEXT")
                         .HasColumnName("QUANTIDADE");
@@ -162,54 +156,7 @@ namespace AppExtensionista.Migrations
 
                     b.HasIndex("IdEstoque");
 
-                    b.HasIndex("IdUsuarioResponsavel");
-
                     b.ToTable("REGISTRO_DESCARTE");
-                });
-
-            modelBuilder.Entity("AppExtensionista.Models.UsuarioModel", b =>
-                {
-                    b.Property<int>("IdUsuario")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("ID_USUARIO");
-
-                    b.Property<int>("DiasAlertaPadrao")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("DIAS_ALERTA_PADRAO");
-
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("LOGIN");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("NOME");
-
-                    b.Property<string>("Senha")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("SENHA");
-
-                    b.HasKey("IdUsuario");
-
-                    b.HasIndex("Login")
-                        .IsUnique();
-
-                    b.ToTable("USUARIO");
-                });
-
-            modelBuilder.Entity("AppExtensionista.Models.AlimentoModel", b =>
-                {
-                    b.HasOne("AppExtensionista.Models.UsuarioModel", "UsuarioCriador")
-                        .WithMany()
-                        .HasForeignKey("IdUsuarioCriador")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UsuarioCriador");
                 });
 
             modelBuilder.Entity("AppExtensionista.Models.EstoqueModel", b =>
@@ -220,15 +167,7 @@ namespace AppExtensionista.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppExtensionista.Models.UsuarioModel", "UsuarioCriador")
-                        .WithMany()
-                        .HasForeignKey("IdUsuarioCriador")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Alimento");
-
-                    b.Navigation("UsuarioCriador");
                 });
 
             modelBuilder.Entity("AppExtensionista.Models.GuiaArmazenamentoModel", b =>
@@ -239,15 +178,7 @@ namespace AppExtensionista.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppExtensionista.Models.UsuarioModel", "UsuarioResponsavel")
-                        .WithMany()
-                        .HasForeignKey("IdUsuarioResponsavel")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Alimento");
-
-                    b.Navigation("UsuarioResponsavel");
                 });
 
             modelBuilder.Entity("AppExtensionista.Models.RegistroDescarteModel", b =>
@@ -258,15 +189,7 @@ namespace AppExtensionista.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AppExtensionista.Models.UsuarioModel", "UsuarioResponsavel")
-                        .WithMany()
-                        .HasForeignKey("IdUsuarioResponsavel")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Estoque");
-
-                    b.Navigation("UsuarioResponsavel");
                 });
 #pragma warning restore 612, 618
         }

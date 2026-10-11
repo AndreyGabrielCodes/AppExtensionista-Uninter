@@ -9,9 +9,9 @@ namespace AppExtensionista.Services
     public interface IEstoqueService
     {
         Task<EstoqueIndexViewModel> ObterEstoqueAgrupadoAsync(string? termoPesquisa);
-        Task SalvarOuAtualizarItemEstoqueAsync(AlimentoCadastroViewModel model, int idUsuarioLogado);
+        Task SalvarOuAtualizarItemEstoqueAsync(AlimentoCadastroViewModel model);
         Task<AlimentoCadastroViewModel?> ObterParaEdicaoAsync(int idEstoque);
-        Task<AlertaVencimentoPopUpViewModel> ObterAlertasVencimentoAsync(int idUsuarioLogado);
+        Task<AlertaVencimentoPopUpViewModel> ObterAlertasVencimentoAsync();
     }
 
     public class EstoqueService : IEstoqueService
@@ -75,14 +75,13 @@ namespace AppExtensionista.Services
             };
         }
 
-        public async Task SalvarOuAtualizarItemEstoqueAsync(AlimentoCadastroViewModel model, int idUsuarioLogado)
+        public async Task SalvarOuAtualizarItemEstoqueAsync(AlimentoCadastroViewModel model)
         {
-
             if (string.IsNullOrEmpty(model.NomeAlimento))
-            throw new InvalidOperationException("Nome do alimento precisa ser preenchido");
+                throw new InvalidOperationException("Nome do alimento precisa ser preenchido");
 
             // Obter/Criar o Alimento pai
-            var alimento = await _alimentoService.ObterOuCriarAlimentoAsync(model.NomeAlimento, model.UnidadeMedida, idUsuarioLogado);
+            var alimento = await _alimentoService.ObterOuCriarAlimentoAsync(model.NomeAlimento, model.UnidadeMedida);
 
             if (model.IdEstoque.HasValue && model.IsEdicao)
             {
@@ -114,7 +113,6 @@ namespace AppExtensionista.Services
                     // Cria uma nova entrada no estoque
                     var novoEstoque = new EstoqueModel
                     {
-                        IdUsuarioCriador = idUsuarioLogado,
                         IdAlimento = alimento.IdAlimento,
                         QuantidadeOriginal = model.Quantidade,
                         Quantidade = model.Quantidade,
@@ -133,7 +131,7 @@ namespace AppExtensionista.Services
                 .Include(e => e.Alimento)
                 .FirstOrDefaultAsync(e => e.IdEstoque == idEstoque && e.Quantidade > 0);
 
-            if (estoque == null) 
+            if (estoque == null)
                 return null;
 
             return new AlimentoCadastroViewModel
@@ -149,10 +147,11 @@ namespace AppExtensionista.Services
             };
         }
 
-        public async Task<AlertaVencimentoPopUpViewModel> ObterAlertasVencimentoAsync(int idUsuarioLogado)
+        public async Task<AlertaVencimentoPopUpViewModel> ObterAlertasVencimentoAsync()
         {
-            var usuario = await _context.Usuarios.FindAsync(idUsuarioLogado);
-            int diasAlerta = usuario?.DiasAlertaPadrao ?? 7;
+            // Busca as configurações globais do dispositivo
+            var settings = await _context.AppSettings.FirstOrDefaultAsync();
+            int diasAlerta = settings?.DiasAlertaVencimento ?? 7;
 
             var dataLimite = DateTime.Today.AddDays(diasAlerta);
 
@@ -173,7 +172,7 @@ namespace AppExtensionista.Services
 
             return new AlertaVencimentoPopUpViewModel
             {
-                DiasConfiguradosUsuario = diasAlerta,
+                DiasConfigurados = diasAlerta, 
                 ItensAlerta = itensAproximando
             };
         }

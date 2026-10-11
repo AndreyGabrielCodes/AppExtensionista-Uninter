@@ -28,7 +28,6 @@ namespace AppExtensionista.ViewModels
         public string NomeAlimento { get; set; }
         public string Titulo { get; set; }
         public string Descricao { get; set; }
-        public string ResponsavelNome { get; set; }
         public DateTime DataCriacao { get; set; }
         public DateTime? DataUltimaAlteracao { get; set; }
     }

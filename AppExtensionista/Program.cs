@@ -14,7 +14,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllersWithViews();
 
 // Registro dos Services com Injeção de Dependencia
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddScoped<IAlimentoService, AlimentoService>();
 builder.Services.AddScoped<IGuiaArmazenamentoService, GuiaArmazenamentoService>();
 builder.Services.AddScoped<IEstoqueService, EstoqueService>();
@@ -34,16 +34,10 @@ using (var scope = app.Services.CreateScope())
     // Aplica as migrations sem apagar dados já existentes
     context.Database.Migrate();
 
-    // Cria User ADM se o banco estiver limpo
-    if (!context.Usuarios.Any())
+    // Cria configs se o banco estiver limpo
+    if (!context.AppSettings.Any())
     {
-        context.Usuarios.Add(new UsuarioModel
-        {
-            Nome = "Administrador",
-            Login = "Admin",
-            Senha = "4731589",
-            DiasAlertaPadrao = 7
-        });
+        context.AppSettings.Add(new AppSettingsModel{});
         context.SaveChanges();
     }
 }

@@ -14,12 +14,6 @@ namespace AppExtensionista.Controllers
             _descarteService = descarteService;
         }
 
-        private int ObterIdUsuarioLogado()
-        {
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier);
-            return claim != null ? int.Parse(claim.Value) : 1;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Index(string? termoPesquisa)
         {
@@ -48,9 +42,7 @@ namespace AppExtensionista.Controllers
                     return Json(new { success = false, message = "Preencha todos os campos obrigatórios para o descarte." });
                 }
 
-                int idUsuario = ObterIdUsuarioLogado();
-
-                await _descarteService.RegistrarDescarteAsync(model, idUsuario);
+                await _descarteService.RegistrarDescarteAsync(model);
 
                 return Json(new { success = true, message = "Registro de descarte/consumo efetuado com sucesso!" });
             }
