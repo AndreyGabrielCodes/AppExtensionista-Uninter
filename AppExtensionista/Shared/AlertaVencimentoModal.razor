@@ -2,10 +2,10 @@
 @using AppExtensionista.Services
 @inject IEstoqueService EstoqueService
 
-@if (viewModel != null && viewModel.ExibirPopUp)
+@if (visivel && viewModel != null && viewModel.ExibirPopUp)
 {
     <div class="modal-overlay">
-        <div class="modal-card alerta-card">
+        <div class="alerta-card">
 
             <div class="alerta-header">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4d4d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -13,13 +13,10 @@
                     <line x1="12" y1="9" x2="12" y2="13"></line>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
-                <h3>Atenção: Alimentos Próximos ao Vencimento</h3>
-                
+                <h3>Atenção! Alimentos Próximos do Vencimento</h3>
             </div>
 
-            <span class="alerta-line"></span>
-
-            <p class="alerta-sub">Os seguintes itens venceram ou vão vencer em até @viewModel.DiasConfigurados dias:</p>
+            <p class="alerta-sub">Os seguintes venceram ou vão vencer em até @viewModel.DiasConfigurados dias:</p>
 
             <div class="tabela-container">
                 <table class="tabela-alerta">
@@ -28,6 +25,7 @@
                             <th>Alimento</th>
                             <th>Qtd</th>
                             <th>Validade</th>
+                            <th>Situação</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,7 +35,26 @@
                             <tr class="@classeVencido">
                                 <td>@item.NomeAlimento (@item.Marca)</td>
                                 <td>@item.Quantidade @item.UnidadeMedidaSigla</td>
-                                <td>@item.DataValidade.ToString("dd/MM/yyyy")</td>
+                                <td>@item.DataValidade.ToString("dd/MM/yy")</td>
+                                <td>
+                                    @if (item.IsVencido)
+                                    {
+                                        var diasVencido = Math.Abs(item.DiasAteVencimento);
+                                        <span>Venceu há @diasVencido @(diasVencido == 1 ? "dia" : "dias")</span>
+                                    }
+                                    else if (item.DiasAteVencimento == 0)
+                                    {
+                                        <span>Vence hoje!</span>
+                                    }
+                                    else if (item.DiasAteVencimento == 1)
+                                    {
+                                        <span>Vence amanhã</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Vence em @item.DiasAteVencimento dias</span>
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -53,88 +70,103 @@
 
 @code {
     private AlertaVencimentoPopUpViewModel viewModel = new();
+    private bool visivel = false;
 
     protected override async Task OnInitializedAsync()
     {
+        await CarregarEExibirAutomatico();
+    }
+
+    public async Task CarregarEExibirAutomatico()
+    {
         viewModel = await EstoqueService.ObterAlertasVencimentoAsync();
+        // Abre sozinho ao carregar a página se houver alimentos críticos
+        if (viewModel.ExibirPopUp)
+        {
+            visivel = true;
+            StateHasChanged();
+        }
+    }
+
+    // Método público para ser acionado externamente
+    public async Task AbrirModalManual()
+    {
+        viewModel = await EstoqueService.ObterAlertasVencimentoAsync();
+        visivel = true;
+        StateHasChanged();
     }
 
     private void FecharModal()
     {
-        viewModel.ItensAlerta.Clear();
+        visivel = false;
     }
 }
 
 <style>
     .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        z-index: 3000;
+        position: fixed !important;
+        inset: 0 !important;
+        background: rgba(0,0,0,0.7) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 20px !important;
+        z-index: 3000 !important;
     }
 
     .alerta-card {
-        background: #1e1e1e;
-        color: #fff;
-        padding: 24px;
-        border-radius: 8px;
-        width: 100%;
-        max-width: 440px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        background: #1e1e1e !important;
+        color: #fff !important;
+        padding: 24px !important;
+        border-radius: 8px !important;
+        width: 100% !important;
+        max-width: 520px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
     }
 
     .alerta-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding-bottom: 14px;
-        margin-bottom: 14px;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
     }
 
         .alerta-header h3 {
-            margin: 0;
-            font-size: 16px;
-            color: #ff4d4d;
-            line-height: 1.2;
+            margin: 0 !important;
+            font-size: 20px !important;
+            color: #ff4d4d !important;
         }
 
-    .alerta-line {
-        border-bottom: 1px solid #444;
-    }
-
     .alerta-sub {
-        font-size: 13px;
-        color: #ccc;
-        margin-bottom: 16px;
+        font-size: 14px !important;
+        color: #ccc !important;
+        margin-bottom: 16px !important;
+        padding-bottom: 8px !important;
+        border-bottom: 1px solid #444 !important;
     }
 
     .tabela-container {
-        max-height: 200px;
-        overflow-y: auto;
-        margin-bottom: 16px;
+        max-height: 200px !important;
+        overflow-y: auto !important;
+        margin-bottom: 16px !important;
     }
 
     .tabela-alerta {
-        width: 100%;
-        font-size: 13px;
-        border-collapse: collapse;
-        text-align: left;
+        width: 100% !important;
+        font-size: 13px !important;
+        border-collapse: collapse !important;
+        text-align: left !important;
     }
 
         .tabela-alerta th {
-            color: #aaa;
-            font-weight: 600;
-            padding-bottom: 8px;
+            color: #aaa !important;
+            font-weight: 600 !important;
+            padding-bottom: 8px !important;
             border-bottom: none !important;
         }
 
         .tabela-alerta td {
-            padding: 8px 4px;
-            border-bottom: 1px solid #2a2a2a;
+            padding: 8px 4px !important;
+            border-bottom: 1px solid #2a2a2a !important;
         }
 
     .text-danger {
@@ -142,29 +174,29 @@
     }
 
     .fw-bold {
-        font-weight: bold;
+        font-weight: bold !important;
     }
 
     .modal-actions {
-        display: flex;
-        justify-content: flex-end;
+        display: flex !important;
+        justify-content: flex-end !important;
     }
 
     .btn {
-        padding: 8px 16px;
-        border-radius: 4px;
-        font-weight: bold;
-        cursor: pointer;
-        border: none;
+        padding: 8px 16px !important;
+        border-radius: 4px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        border: none !important;
     }
 
     .btn-dark {
-        background: #333;
-        color: #fff;
-        border: 1px solid #555;
+        background: #333 !important;
+        color: #fff !important;
+        border: 1px solid #555 !important;
     }
 
         .btn-dark:hover {
-            background: #444;
+            background: #444 !important;
         }
 </style>

@@ -11,7 +11,7 @@
 
 <AppExtensionista.Shared.TopNav Titulo="Estoque" Descricao="Visualização dos alimentos cadastrados em estoque" />
 
-<AlertaVencimentoModal />
+<AlertaVencimentoModal @ref="modalAlertaRef" />
 
 <div class="mobile-container pb-60">
 
@@ -22,8 +22,8 @@
                 <span class="title">Cadastrados</span>
                 <span class="value">@viewModel.TotalAlimentosCadastrados</span>
             </div>
-            <div class="stat-item">
-                <span class="title">Vencidos</span>
+            <div class="stat-item clickable" @onclick="AbrirModalVencidosManual" title="Clique para ver os itens vencidos ou prestes a vencer">
+                <span class="title">Vencidos 🔍</span>
                 <span class="value text-danger">@viewModel.TotalVencidos</span>
             </div>
             <div class="stat-item">
@@ -180,6 +180,17 @@
             font-weight: bold;
             font-size: 16px;
         }
+
+        .stat-item.clickable {
+            cursor: pointer;
+            transition: background 0.2s;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+
+            .stat-item.clickable:hover {
+                background: rgba(0, 0, 0, 0.05);
+            }
 
     .search-box {
         display: flex;
@@ -442,7 +453,15 @@
         {
             mensagemErro = $"Ocorreu um erro: {ex.Message}";
         }
+    }
 
-        
+    private AlertaVencimentoModal? modalAlertaRef;
+
+    private async Task AbrirModalVencidosManual()
+    {
+        if (modalAlertaRef != null)
+        {
+            await modalAlertaRef.AbrirModalManual();
+        }
     }
 }
