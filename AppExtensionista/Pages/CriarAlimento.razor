@@ -248,7 +248,7 @@
 
             if (idAlimentoAlvo > 0 && guiaModalRef != null)
             {
-                await guiaModalRef.AbrirModalParaAlimento(idAlimentoAlvo, model.NomeAlimento);
+                await guiaModalRef.AbrirModalParaAlimento(idAlimentoAlvo, model.NomeAlimento, true);
                 return; // O fluxo será concluído após o usuário fechar/salvar a guia 
             }
 

@@ -25,10 +25,8 @@
             </div>
 
             <div class="guia-modal-actions">
-                <button class="guia-btn guia-btn-primary" @onclick="SalvarGuia" disabled="@salvando">
-                    @(salvando ? "Salvando..." : "Salvar Guia")
-                </button>
-                <button class="guia-btn guia-btn-secondary" @onclick="FecharModal">@(salvando ? "Ignorar" : "Sair")</button>
+                <button class="guia-btn guia-btn-primary" @onclick="SalvarGuia">Salvar Guia</button>
+                <button class="guia-btn guia-btn-secondary" @onclick="FecharModal">@(isEdicao ? "Ignorar" : "Sair")</button>
             </div>
         </div>
     </div>
@@ -39,22 +37,19 @@
 
     private bool visivel = false;
     private bool isEdicao = false;
-    private bool salvando = false;
     private string mensagemErro = "";
     private GuiaArmazenamentoFormViewModel formModel = new();
     private int _idAlimentoAtual;
 
-    public async Task AbrirModalParaAlimento(int idAlimento, string nomeAlimento)
+    public async Task AbrirModalParaAlimento(int idAlimento, string nomeAlimento, bool edicao = false)
     {
         _idAlimentoAtual = idAlimento;
         mensagemErro = "";
-        salvando = false;
 
         var guiaExistente = await GuiaArmazenamentoService.ObterPorAlimentoIdAsync(idAlimento);
 
         if (guiaExistente != null)
         {
-            isEdicao = true;
             formModel = new GuiaArmazenamentoFormViewModel
             {
                 IdGuiaArmazenamento = guiaExistente.IdGuiaArmazenamento,
@@ -65,7 +60,6 @@
         }
         else
         {
-            isEdicao = false;
             formModel = new GuiaArmazenamentoFormViewModel
             {
                 IdAlimento = idAlimento,
@@ -74,19 +68,14 @@
             };
         }
 
+        isEdicao = edicao;
+
         visivel = true;
         StateHasChanged();
     }
 
     private async Task SalvarGuia()
     {
-        if (string.IsNullOrWhiteSpace(formModel.Titulo) || string.IsNullOrWhiteSpace(formModel.Descricao))
-        {
-            mensagemErro = "Preencha o título e a descrição da guia.";
-            return;
-        }
-
-        salvando = true;
         try
         {
             await GuiaArmazenamentoService.SalvarOuAtualizarGuiaAsync(formModel);
@@ -96,10 +85,6 @@
         catch (Exception ex)
         {
             mensagemErro = $"Erro ao salvar guia: {ex.Message}";
-        }
-        finally
-        {
-            salvando = false;
         }
     }
 

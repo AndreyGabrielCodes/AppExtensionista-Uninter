@@ -42,6 +42,12 @@ namespace AppExtensionista.Services
 
         public async Task SalvarOuAtualizarGuiaAsync(GuiaArmazenamentoFormViewModel model)
         {
+            if (string.IsNullOrEmpty(model.Titulo))
+                throw new InvalidOperationException("Titulo não pode ser vazio!");
+
+            if (string.IsNullOrEmpty(model.Descricao))
+                throw new InvalidOperationException("Descrição não pode ser vazia!");
+
             var guia = await _context.GuiasArmazenamento
                 .FirstOrDefaultAsync(g => g.IdAlimento == model.IdAlimento);
 
