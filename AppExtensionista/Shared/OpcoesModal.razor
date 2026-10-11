@@ -21,12 +21,12 @@
         {
             <div class="input-inline">
                 <input type="number" class="form-control" @bind="diasAlerta" min="1" />
-                <button class="btn btn-dark" @onclick="SalvarDias">Salvar</button>
+                <button class="btn btn-primary" @onclick="SalvarDias">Salvar</button>
             </div>
         }
 
         <div class="modal-actions align-right">
-            <button class="btn btn-light" @onclick="OnFechar">Voltar</button>
+            <button class="btn btn-secondary" @onclick="OnFechar">Voltar</button>
         </div>
     </div>
 </div>
@@ -78,6 +78,15 @@
         justify-content: center;
         padding: 20px;
         z-index: 2000;
+    }
+
+    .modal-card h3 {
+        margin-top: 0;
+        border-bottom: 1px solid #444;
+        padding-bottom: 10px;
+        font-size: 18px;
+        margin-bottom: 12px;
+        color: #ffc107 !important;
     }
 
     .opcoes-card {
@@ -157,14 +166,13 @@
         border: none;
     }
 
-    .btn-dark {
-        background: #333;
+    .btn-primary {
+        background: #1976d2;
         color: #fff;
-        border: 1px solid #555;
     }
 
-    .btn-light {
+    .btn-secondary {
         background: #e0e0e0;
-        color: #000;
+        color: #333;
     }
 </style>

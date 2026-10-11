@@ -26,13 +26,17 @@ namespace AppExtensionista.Services
         {
             var estoque = await _context.Estoques.FindAsync(model.IdEstoque);
             if (estoque == null)
-                throw new InvalidOperationException("Item do estoque não encontrado.");
+                throw new InvalidOperationException("Item do estoque não encontrado!");
 
             if (model.QuantidadeDescartar <= 0)
-                throw new InvalidOperationException("A quantidade a descartar precisa ser maior que zero");
+                throw new InvalidOperationException("A quantidade a descartar precisa ser maior que zero!");
 
             if (model.QuantidadeDescartar > estoque.Quantidade)
-                throw new InvalidOperationException("A quantidade a descartar é maior do que a disponível em estoque.");
+                throw new InvalidOperationException("A quantidade a descartar é maior do que a disponível em estoque!");
+
+            if (model.TipoDescarte == Enums.DescarteEnum.Descarte && string.IsNullOrEmpty(model.DescricaoMotivo))
+                throw new InvalidOperationException("Para descartar é necessário informar a descrição!");
+
 
             // Reduz a quantidade no estoque
             if (model.QuantidadeDescartar == estoque.Quantidade)
