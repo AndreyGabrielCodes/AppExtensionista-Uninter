@@ -28,7 +28,7 @@
                 </span>
                 <span class="value text-danger">@viewModel.TotalVencidos</span>
             </div>
-            <div class="stat-item @(IsActive("/descartados") ? "active" : "")" @onclick='() => NavigateTo("/descartados")'>
+            <div class="stat-item clickable @(IsActive("/descartados") ? "active" : "")" @onclick='() => NavigateTo("/descartados")'>
                 <span class="title">
                     Descartados <span class="icon-search">🔍</span>
                 </span>
