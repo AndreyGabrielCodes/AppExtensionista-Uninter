@@ -22,12 +22,16 @@
                 <span class="title">Cadastrados</span>
                 <span class="value">@viewModel.TotalAlimentosCadastrados</span>
             </div>
-            <div class="stat-item clickable" @onclick="AbrirModalVencidosManual" title="Clique para ver os itens vencidos ou prestes a vencer">
-                <span class="title">Vencidos 🔍</span>
+            <div class="stat-item clickable" @onclick="AbrirModalVencidosManual" title="Clique para ver os itens vencidos ou a vencer">
+                <span class="title">
+                    Vencidos <span class="icon-search">🔍</span>
+                </span>
                 <span class="value text-danger">@viewModel.TotalVencidos</span>
             </div>
-            <div class="stat-item">
-                <span class="title">Descartados</span>
+            <div class="stat-item @(IsActive("/descartados") ? "active" : "")" @onclick='() => NavigateTo("/descartados")'>
+                <span class="title">
+                    Descartados <span class="icon-search">🔍</span>
+                </span>
                 <span class="value">@viewModel.TotalDescartados</span>
             </div>
         </div>
@@ -140,6 +144,20 @@
     <AppExtensionista.Shared.OpcoesModal OnFechar="() => exibirOpcoes = false" />
 }
 
+@code {
+
+    private void NavigateTo(string page)
+    {
+        Navigation.NavigateTo(page);
+    }
+
+    private bool IsActive(string route)
+    {
+        var currentUri = Navigation.ToBaseRelativePath(Navigation.Uri);
+        return ("/" + currentUri).Equals(route, StringComparison.OrdinalIgnoreCase);
+    }
+}
+
 <style>
     .mobile-container {
         padding: 20px;
@@ -159,6 +177,7 @@
     .stats-bar {
         display: flex;
         justify-content: space-around;
+        align-items: center;
         margin-bottom: 15px;
         background: #f5f5f5;
         padding: 10px;
@@ -167,11 +186,18 @@
     }
 
     .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
+        flex: 1;
     }
 
         .stat-item .title {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
             font-size: 11px;
             color: #666;
         }
@@ -185,12 +211,16 @@
             cursor: pointer;
             transition: background 0.2s;
             border-radius: 4px;
-            padding: 2px 4px;
+            padding: 4px 0;
         }
 
             .stat-item.clickable:hover {
                 background: rgba(0, 0, 0, 0.05);
             }
+
+    .icon-search {
+        font-size: 10px;
+    }
 
     .search-box {
         display: flex;
