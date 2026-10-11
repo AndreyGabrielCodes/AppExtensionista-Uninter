@@ -8,25 +8,30 @@
         <h3>Opções do Dispositivo</h3>
 
         <button class="menu-btn" @onclick="ToggleAviso">
-            <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="btn-icon-claro" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                 <line x1="16" y1="2" x2="16" y2="6"></line>
                 <line x1="8" y1="2" x2="8" y2="6"></line>
                 <line x1="3" y1="10" x2="21" y2="10"></line>
+                <circle cx="8" cy="14" r="1" fill="currentColor"></circle>
+                <circle cx="12" cy="14" r="1" fill="currentColor"></circle>
+                <circle cx="16" cy="14" r="1" fill="currentColor"></circle>
             </svg>
             <span>Alterar número de dias de aviso de vencimento</span>
         </button>
 
         @if (exibindoAvisoVencimento)
         {
+            <p class="alerta-sub">Altera quantos dias antes do vencimento o alerta será exibido</p>
+
             <div class="input-inline">
-                <input type="number" class="form-control" @bind="diasAlerta" min="1" />
-                <button class="btn btn-primary" @onclick="SalvarDias">Salvar</button>
+                <input type="number" class="form-control-input-opcoes" @bind="diasAlerta" min="1" />
             </div>
         }
 
-        <div class="modal-actions align-right">
-            <button class="btn btn-secondary" @onclick="OnFechar">Voltar</button>
+        <div class="modal-actions-opcoes">
+            <button class="btn-opcoes btn-primary-opcoes" @onclick="SalvarOpcoes">Salvar Opções</button>
+            <button class="btn-opcoes btn-secondary-opcoes" @onclick="OnFechar">Voltar</button>
         </div>
     </div>
 </div>
@@ -52,12 +57,7 @@
         exibindoAvisoVencimento = !exibindoAvisoVencimento;
     }
 
-    private void Sair()
-    {
-        Navigation.NavigateTo("/");
-    }
-
-    private async Task SalvarDias()
+    private async Task SalvarOpcoes()
     {
         if (_settings != null)
         {
@@ -65,114 +65,121 @@
             await SettingsService.SaveSettingsAsync(_settings);
         }
         exibindoAvisoVencimento = false;
+        await OnFechar.InvokeAsync();
     }
 }
 
 <style>
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        z-index: 2000;
+    .alerta-sub {
+        font-size: 13px !important;
+        color: #bbb !important;
+        margin-top: 10px !important;
+        margin-bottom: 8px !important;
     }
 
-    .modal-card h3 {
-        margin-top: 0;
-        border-bottom: 1px solid #444;
-        padding-bottom: 10px;
-        font-size: 18px;
-        margin-bottom: 12px;
-        color: #ffc107 !important;
+    .modal-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        background: rgba(0,0,0,0.6) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 20px !important;
+        z-index: 2000 !important;
     }
 
     .opcoes-card {
-        background: #1e1e1e;
-        color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        width: 100%;
-        max-width: 320px;
-        text-align: left;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        background: #1e1e1e !important;
+        color: #fff !important;
+        padding: 20px !important;
+        border-radius: 8px !important;
+        width: 100% !important;
+        max-width: 320px !important;
+        text-align: left !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
     }
 
         .opcoes-card h3 {
-            margin-top: 0;
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
-            font-size: 18px;
-            margin-bottom: 10px;
+            margin-top: 0 !important;
+            border-bottom: 1px solid #444 !important;
+            padding-bottom: 10px !important;
+            font-size: 18px !important;
+            margin-bottom: 12px !important;
+            color: #ffc107 !important;
         }
 
     .menu-btn {
-        width: 100%;
-        text-align: left;
-        background: none;
-        border: none;
-        color: #fff;
-        padding: 12px 0;
-        font-size: 14px;
-        border-bottom: 1px solid #333;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 12px;
+        width: 100% !important;
+        text-align: left !important;
+        background: none !important;
+        border: none !important;
+        color: #fff !important;
+        padding: 10px 0 !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
     }
 
-        .menu-btn:hover {
-            color: #ccc;
-        }
-
-    .btn-icon {
-        flex-shrink: 0;
-        color: #fff;
+    .btn-icon-claro {
+        flex-shrink: 0 !important;
+        color: #d1d1d1 !important;
     }
 
     .input-inline {
-        display: flex;
-        gap: 8px;
-        margin-top: 12px;
-        margin-bottom: 8px;
+        margin-top: 8px !important;
+        margin-bottom: 12px !important;
     }
 
-    .form-control {
-        flex: 1;
-        padding: 8px;
-        border-radius: 4px;
-        border: 1px solid #444;
-        background: #2a2a2a;
-        color: #fff;
-        box-sizing: border-box;
+    .form-control-input-opcoes {
+        width: 100% !important;
+        padding: 8px !important;
+        border-radius: 4px !important;
+        background: #2a2a2a !important;
+        color: #ffffff !important;
+        font-size: 14px !important;
+        box-sizing: border-box !important;
     }
 
-    .modal-actions {
-        display: flex;
-        margin-top: 20px;
+        .form-control-input-opcoes:focus {
+            outline: none !important;
+            border-color: #1976d2 !important;
+        }
+
+    .modal-actions-opcoes {
+        display: flex !important;
+        justify-content: space-between !important;
+        gap: 10px !important;
+        margin-top: 20px !important;
     }
 
-    .align-right {
-        justify-content: flex-end;
+    .btn-opcoes {
+        flex: 1 !important;
+        padding: 8px 12px !important;
+        border-radius: 4px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        border: none !important;
+        font-size: 13px !important;
+        text-align: center !important;
     }
 
-    .btn {
-        padding: 8px 16px;
-        border-radius: 4px;
-        font-weight: bold;
-        cursor: pointer;
-        border: none;
+    .btn-primary-opcoes {
+        background: #1976d2 !important;
+        color: #fff !important;
     }
 
-    .btn-primary {
-        background: #1976d2;
-        color: #fff;
+        .btn-primary-opcoes:hover {
+            background: #1565c0 !important;
+        }
+
+    .btn-secondary-opcoes {
+        background: #e0e0e0 !important;
+        color: #333 !important;
     }
 
-    .btn-secondary {
-        background: #e0e0e0;
-        color: #333;
-    }
+        .btn-secondary-opcoes:hover {
+            background: #d0d0d0 !important;
+        }
 </style>
