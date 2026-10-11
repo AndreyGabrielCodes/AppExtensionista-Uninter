@@ -2,8 +2,9 @@
 @using AppExtensionista.ViewModels
 @using AppExtensionista.Services
 @inject IDescarteService DescarteService
+@inject ISettingsService SettingsService
 
-<AppExtensionista.Shared.TopNav Titulo="Descartados" Descricao="Visualização dos motivos de alimentos descartados\consumidos" />
+<AppExtensionista.Shared.TopNav Titulo="Descartados" Descricao="@($"Visualização dos alimentos descartados/consumidos nos últimos {diasHistoricoConfigurado} dias")" />
 
 <div class="mobile-container pb-60">
 
@@ -11,7 +12,7 @@
     {
         <div class="stats-bar">
             <div class="stat-item">
-                <span class="title">Descartados/Consumidos</span>
+                <span class="title">Descartados/Consumidos (Período)</span>
                 <span class="value">@viewModel.TotalDescartadosConsumidos</span>
             </div>
         </div>
@@ -29,7 +30,7 @@
         }
         else if (!viewModel.Agrupamentos.Any())
         {
-            <p>Nenhum item descartado encontrado.</p>
+            <p>Nenhum item descartado encontrado no período.</p>
         }
         else
         {
@@ -61,7 +62,6 @@
                                             </svg>
                                         </button>
                                     </div>
-                                
                                 </div>
                             }
                         </div>
@@ -104,19 +104,6 @@
 
     .pb-60 {
         padding-bottom: 70px;
-    }
-
-    .header h2 {
-        margin-bottom: 4px;
-        font-size: 22px;
-        font-weight: bold;
-    }
-
-    .subtitle {
-        display: block;
-        color: #666;
-        margin-bottom: 16px;
-        font-size: 13px;
     }
 
     .stats-bar {
@@ -281,6 +268,7 @@
 @code {
     private string termoPesquisa = "";
     private bool exibirOpcoes = false;
+    private int diasHistoricoConfigurado = 30;
 
     private DescartadosIndexViewModel? viewModel;
     private Dictionary<string, bool> gruposAbertos = new();
@@ -288,6 +276,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var settings = await SettingsService.GetSettingsAsync();
+        if (settings != null)
+        {
+            diasHistoricoConfigurado = settings.DiasHistoricoDescartados;
+        }
+
         await CarregarDados();
     }
 

@@ -1,5 +1,6 @@
 ﻿using AppExtensionista.Data;
 using AppExtensionista.Models;
+using AppExtensionista.Pages;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppExtensionista.Services
@@ -29,7 +30,8 @@ namespace AppExtensionista.Services
                 settings = new AppSettingsModel
                 {
                     Id = 1,
-                    DiasAlertaVencimento = 7
+                    DiasAlertaVencimento = 7,
+                    DiasHistoricoDescartados = 30
                 };
 
                 _context.AppSettings.Add(settings);
@@ -41,6 +43,12 @@ namespace AppExtensionista.Services
 
         public async Task SaveSettingsAsync(AppSettingsModel settings)
         {
+            if (settings.DiasAlertaVencimento == 0)
+                throw new InvalidOperationException("Dia de alerta de vencimento não pode ser zero");
+
+            if (settings.DiasHistoricoDescartados == 0)
+                throw new InvalidOperationException("Dia de histórico de descarte não pode ser zero");
+
             _context.AppSettings.Update(settings);
             await _context.SaveChangesAsync();
         }

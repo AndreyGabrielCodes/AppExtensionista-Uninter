@@ -49,6 +49,10 @@ namespace AppExtensionista.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("DIAS_ALERTA_VENCIMENTO");
 
+                    b.Property<int>("DiasHistoricoDescartados")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("DIAS_HISTORICO_DESCARTADOS");
+
                     b.HasKey("Id");
 
                     b.ToTable("APP_SETTINGS");

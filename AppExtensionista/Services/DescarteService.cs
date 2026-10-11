@@ -16,10 +16,12 @@ namespace AppExtensionista.Services
     public class DescarteService : IDescarteService
     {
         private readonly AppDbContext _context;
+        private readonly ISettingsService _settingsService;
 
-        public DescarteService(AppDbContext context)
+        public DescarteService(AppDbContext context, ISettingsService settingsService)
         {
             _context = context;
+            _settingsService = settingsService;
         }
 
         public async Task RegistrarDescarteAsync(RegistrarDescarteModalViewModel model)
@@ -64,9 +66,15 @@ namespace AppExtensionista.Services
 
         public async Task<DescartadosIndexViewModel> ObterDescartadosAgrupadosAsync(string? termoPesquisa)
         {
+            // Busca as configurações globais do dispositivo
+            var settings = await _settingsService.GetSettingsAsync();
+            int diasLimite = settings.DiasHistoricoDescartados;
+            var dataCorte = DateTime.Now.Date.AddDays(-diasLimite);
+
             var query = _context.RegistrosDescarte
                 .Include(d => d.Estoque)
                     .ThenInclude(e => e.Alimento)
+                .Where(r => r.DataDescarte.Date >= dataCorte)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(termoPesquisa))

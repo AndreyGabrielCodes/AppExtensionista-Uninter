@@ -14,5 +14,9 @@ namespace AppExtensionista.Models
         [Required]
         [Column("DIAS_ALERTA_VENCIMENTO")]
         public int DiasAlertaVencimento { get; set; } = 7;
+
+        [Required]
+        [Column("DIAS_HISTORICO_DESCARTADOS")]
+        public int DiasHistoricoDescartados { get; set; } = 30; 
     }
 }
