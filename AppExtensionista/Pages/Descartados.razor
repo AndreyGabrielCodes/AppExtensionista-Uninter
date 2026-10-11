@@ -3,11 +3,9 @@
 @using AppExtensionista.Services
 @inject IDescarteService DescarteService
 
+<AppExtensionista.Shared.TopNav Titulo="Descartados" Descricao="Visualização dos motivos de alimentos descartados\consumidos" />
+
 <div class="mobile-container pb-60">
-    <div class="header">
-        <h2>(Logo) - Descartados</h2>
-        <small class="subtitle">Descarte/Consumo de produtos</small>
-    </div>
 
     @if (viewModel != null)
     {

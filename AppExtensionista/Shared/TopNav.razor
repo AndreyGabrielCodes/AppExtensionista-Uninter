@@ -1,0 +1,95 @@
+﻿<div class="top-bar">
+    <div class="top-bar-content">
+        <h2 class="app-title">App Extensionista</h2>
+        <div class="author-badge">
+            <span class="author-name">Andrey Moraes</span>
+            <span class="author-id">#4731589</span>
+        </div>
+    </div>
+</div>
+
+<div class="screen-header">
+    <h1 class="screen-main-title">@Titulo</h1>
+    <small class="subtitle">@Descricao</small>
+</div>
+
+<style>
+    .top-bar {
+        background-color: #1e1e1e !important;
+        color: #ffffff !important;
+        padding: 12px 20px !important;
+        border-bottom: 2px solid #000000 !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .top-bar-content {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        max-width: 100% !important;
+    }
+
+    .app-title {
+        margin: 0 !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+        letter-spacing: 0.3px !important;
+    }
+
+    .author-badge {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        font-size: 14px !important;
+        color: #e0e0e0 !important;
+        background: #2a2a2a !important;
+        padding: 4px 10px !important;
+        border-radius: 16px !important;
+        border: 1px solid #444444 !important;
+    }
+
+    .author-name {
+        font-weight: 500 !important;
+    }
+
+    .author-id {
+        font-weight: 600 !important;
+        color: #ffffff !important;
+        background: #1976d2 !important;
+        padding: 2px 6px !important;
+        border-radius: 10px !important;
+        font-size: 12px !important;
+    }
+
+    .screen-header {
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+        padding: 0 20px !important;
+    }
+
+    .screen-main-title {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 38px !important;
+        font-weight: 900 !important;
+        color: #111111 !important;
+        line-height: 1.1 !important;
+    }
+
+    .subtitle {
+        display: block !important;
+        color: #555555 !important;
+        font-size: 16px !important;
+        font-weight: normal !important;
+        margin: 10px 0 0 0 !important;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; }
+
+    [Parameter]
+    public string Descricao { get; set; }
+}

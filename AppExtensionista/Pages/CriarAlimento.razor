@@ -9,10 +9,9 @@
 @inject IEstoqueService EstoqueService
 @inject NavigationManager Navigation
 
+<AppExtensionista.Shared.TopNav Titulo="Estoque" Descricao="@(IdEstoque.HasValue ? "Editar Alimento" : "Cadastrar Alimento")" />
+
 <div class="mobile-container pb-60">
-    <div class="header">
-        <h2>(Logo) - @(IdEstoque.HasValue ? "Editar Alimento" : "Cadastrar Alimento")</h2>
-    </div>
 
     <div class="form-container">
         <div class="form-group">
