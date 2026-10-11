@@ -7,8 +7,11 @@
 @inject IEstoqueService EstoqueService
 @inject IDescarteService DescarteService
 @inject NavigationManager Navigation
+@inherits LayoutComponentBase
 
 <AppExtensionista.Shared.TopNav Titulo="Estoque" Descricao="Visualização dos alimentos cadastrados em estoque" />
+
+<AlertaVencimentoModal />
 
 <div class="mobile-container pb-60">
 

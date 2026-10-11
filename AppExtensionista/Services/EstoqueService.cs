@@ -153,11 +153,12 @@ namespace AppExtensionista.Services
             var settings = await _context.AppSettings.FirstOrDefaultAsync();
             int diasAlerta = settings?.DiasAlertaVencimento ?? 7;
 
-            var dataLimite = DateTime.Today.AddDays(diasAlerta);
+            var hoje = DateTime.Today;
+            var dataLimite = hoje.AddDays(diasAlerta);
 
             var itensAproximando = await _context.Estoques
                 .Include(e => e.Alimento)
-                .Where(e => e.Quantidade > 0 && e.DataValidade.Date <= dataLimite.Date)
+                .Where(e => e.Quantidade > 0 && e.DataValidade <= dataLimite)
                 .Select(e => new ItemAlertaVencimentoViewModel
                 {
                     IdEstoque = e.IdEstoque,
@@ -172,7 +173,7 @@ namespace AppExtensionista.Services
 
             return new AlertaVencimentoPopUpViewModel
             {
-                DiasConfigurados = diasAlerta, 
+                DiasConfigurados = diasAlerta,
                 ItensAlerta = itensAproximando
             };
         }
