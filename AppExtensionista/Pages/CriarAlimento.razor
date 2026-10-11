@@ -12,6 +12,8 @@
 
 <AppExtensionista.Shared.TopNav Titulo="Estoque" Descricao="@(IdEstoque.HasValue ? "Edição de Alimento já cadastrado no estoque" : "Cadastrar novo Alimento no estoque")" />
 
+<AppExtensionista.Shared.GuiaArmazenamentoModal @ref="guiaModalRef" OnGuiaSalva="FinalizarProcessoSalvar" />
+
 <div class="mobile-container pb-60">
 
     <div class="form-container">
@@ -68,7 +70,7 @@
         </div>
 
         <div class="form-actions">
-            <button class="btn btn-primary" @onclick="Salvar" disabled="@salvando">
+            <button class="btn btn-primary" @onclick="IniciarSalvar" disabled="@salvando">
                 @(salvando ? "Salvando..." : "Salvar")
             </button>
             <button class="btn btn-secondary" @onclick="Cancelar" disabled="@salvando">Cancelar</button>
@@ -126,15 +128,15 @@
         background: #fff;
     }
 
-        .form-control:focus {
-            outline: none;
-            border-color: #1976d2;
-        }
+    .form-control:focus {
+        outline: none;
+        border-color: #1976d2;
+    }
 
-        .form-control:disabled {
-            background: #f0f0f0;
-            color: #888;
-        }
+    .form-control:disabled {
+        background: #f0f0f0;
+        color: #888;
+    }
 
     small {
         font-size: 11px;
@@ -175,6 +177,7 @@
     public int? IdEstoque { get; set; }
     private bool exibirOpcoes = false;
     private bool salvando = false;
+    private AppExtensionista.Shared.GuiaArmazenamentoModal? guiaModalRef;
 
     private AlimentoCadastroViewModel model = new()
     {
@@ -184,7 +187,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Carrega a lista de alimentos existentes para o dropdown
         model.AlimentosExistentesOptions = await AlimentoService.ObterAlimentosExistentesOptionsAsync();
 
         if (IdEstoque.HasValue)
@@ -193,13 +195,11 @@
             if (estoqueExistente != null)
             {
                 model = estoqueExistente;
-
                 model.AlimentosExistentesOptions = await AlimentoService.ObterAlimentosExistentesOptionsAsync();
             }
         }
     }
 
-    // Realiza o autopreenchimento quando o usuário escolhe um alimento da listagem
     private void OnSelecionarAlimentoExistente(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value?.ToString(), out int idAlimentoSelecionado) && idAlimentoSelecionado > 0)
@@ -220,19 +220,51 @@
         }
     }
 
-    private async Task Salvar()
+    private async Task IniciarSalvar()
     {
+        if (string.IsNullOrWhiteSpace(model.NomeAlimento))
+        {
+            return;
+        }
+
         salvando = true;
 
         try
         {
             await EstoqueService.SalvarOuAtualizarItemEstoqueAsync(model);
+
+            // Busca o IdAlimento gerado ou selecionado
+            int idAlimentoAlvo = model.IdAlimentoSelecionado ?? 0;
+
+            if (idAlimentoAlvo == 0)
+            {
+                var listaOpts = await AlimentoService.ObterAlimentosExistentesOptionsAsync();
+                var recemCriado = listaOpts.FirstOrDefault(a => a.Nome.Equals(model.NomeAlimento, StringComparison.OrdinalIgnoreCase));
+                if (recemCriado != null)
+                {
+                    idAlimentoAlvo = recemCriado.IdAlimento;
+                }
+            }
+
+            if (idAlimentoAlvo > 0 && guiaModalRef != null)
+            {
+                await guiaModalRef.AbrirModalParaAlimento(idAlimentoAlvo, model.NomeAlimento);
+                return; // O fluxo será concluído após o usuário fechar/salvar a guia 
+            }
+
+            // Finaliza direto se por algum motivo não achar o ID do alimento
             Navigation.NavigateTo("/estoque");
         }
-        finally
+        catch
         {
             salvando = false;
         }
+    }
+
+    private void FinalizarProcessoSalvar()
+    {
+        salvando = false;
+        Navigation.NavigateTo("/estoque");
     }
 
     private void Cancelar()

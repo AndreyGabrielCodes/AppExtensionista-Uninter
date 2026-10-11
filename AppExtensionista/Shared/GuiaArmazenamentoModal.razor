@@ -1,0 +1,218 @@
+﻿@using AppExtensionista.ViewModels
+@using AppExtensionista.Services
+@inject IGuiaArmazenamentoService GuiaArmazenamentoService
+
+@if (visivel)
+{
+    <div class="guia-modal-overlay">
+        <div class="guia-modal-card">
+            <h3>Guia de Armazenamento</h3>
+            <p class="guia-sub">@(isEdicao ? "Visualize" : "Cadastre") as orientações de armazenamento para este alimento. Você pode editar!</p>
+
+            @if (!string.IsNullOrEmpty(mensagemErro))
+            {
+                <div class="guia-alert-error">@mensagemErro</div>
+            }
+
+            <div class="guia-form-group">
+                <label>Título da Guia:</label>
+                <input type="text" class="guia-form-control" placeholder="Como armazenar Arroz..." @bind="formModel.Titulo" />
+            </div>
+
+            <div class="guia-form-group">
+                <label>Instruções Detalhadas:</label>
+                <textarea class="guia-form-control" rows="4" placeholder="Informe como conservar o alimento corretamente..." @bind="formModel.Descricao"></textarea>
+            </div>
+
+            <div class="guia-modal-actions">
+                <button class="guia-btn guia-btn-primary" @onclick="SalvarGuia" disabled="@salvando">
+                    @(salvando ? "Salvando..." : "Salvar Guia")
+                </button>
+                <button class="guia-btn guia-btn-secondary" @onclick="FecharModal">Pular / Cancelar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback OnGuiaSalva { get; set; }
+
+    private bool visivel = false;
+    private bool isEdicao = false;
+    private bool salvando = false;
+    private string mensagemErro = "";
+    private GuiaArmazenamentoFormViewModel formModel = new();
+    private int _idAlimentoAtual;
+
+    public async Task AbrirModalParaAlimento(int idAlimento, string nomeAlimento)
+    {
+        _idAlimentoAtual = idAlimento;
+        mensagemErro = "";
+        salvando = false;
+
+        var guiaExistente = await GuiaArmazenamentoService.ObterPorAlimentoIdAsync(idAlimento);
+
+        if (guiaExistente != null)
+        {
+            isEdicao = true;
+            formModel = new GuiaArmazenamentoFormViewModel
+            {
+                IdGuiaArmazenamento = guiaExistente.IdGuiaArmazenamento,
+                IdAlimento = idAlimento,
+                Titulo = guiaExistente.Titulo,
+                Descricao = guiaExistente.Descricao
+            };
+        }
+        else
+        {
+            isEdicao = false;
+            formModel = new GuiaArmazenamentoFormViewModel
+            {
+                IdAlimento = idAlimento,
+                Titulo = "Como armazenar " + nomeAlimento,
+                Descricao = ""
+            };
+        }
+
+        visivel = true;
+        StateHasChanged();
+    }
+
+    private async Task SalvarGuia()
+    {
+        if (string.IsNullOrWhiteSpace(formModel.Titulo) || string.IsNullOrWhiteSpace(formModel.Descricao))
+        {
+            mensagemErro = "Preencha o título e a descrição da guia.";
+            return;
+        }
+
+        salvando = true;
+        try
+        {
+            await GuiaArmazenamentoService.SalvarOuAtualizarGuiaAsync(formModel);
+            visivel = false;
+            await OnGuiaSalva.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            mensagemErro = $"Erro ao salvar guia: {ex.Message}";
+        }
+        finally
+        {
+            salvando = false;
+        }
+    }
+
+    private async Task FecharModal()
+    {
+        visivel = false;
+        await OnGuiaSalva.InvokeAsync();
+    }
+}
+
+<style>
+    .guia-modal-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        background: rgba(0,0,0,0.7) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 20px !important;
+        z-index: 3000 !important;
+    }
+
+    .guia-modal-card {
+        background: #1e1e1e !important;
+        color: #fff !important;
+        padding: 24px !important;
+        border-radius: 8px !important;
+        width: 100% !important;
+        max-width: 420px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+        text-align: left !important;
+    }
+
+        .guia-modal-card h3 {
+            margin-top: 0 !important;
+            padding-bottom: 5px !important;
+            font-size: 18px !important;
+            color: #ffc107 !important;
+        }
+
+    .guia-sub {
+        font-size: 14px !important;
+        color: #aaa !important;
+        padding-bottom: 8px;
+        margin-bottom: 14px !important;
+        border-bottom: 1px solid #444 !important;
+    }
+
+    .guia-form-group {
+        margin-bottom: 14px !important;
+    }
+
+        .guia-form-group label {
+            display: block !important;
+            font-size: 14px !important;
+            margin-bottom: 4px !important;
+            color: #ccc !important;
+        }
+
+    .guia-form-control {
+        width: 100% !important;
+        padding: 8px !important;
+        border-radius: 4px !important;
+        border: 1px solid #444 !important;
+        background: #2a2a2a !important;
+        color: #fff !important;
+        box-sizing: border-box !important;
+        font-family: inherit !important;
+    }
+
+    .guia-alert-error {
+        background-color: #f8d7da !important;
+        color: #842029 !important;
+        border: 1px solid #f5c2c7 !important;
+        padding: 6px 10px !important;
+        border-radius: 4px !important;
+        font-size: 12px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .guia-modal-actions {
+        display: flex !important;
+        justify-content: space-between !important;
+        margin-top: 18px !important;
+        gap: 10px !important;
+    }
+
+    .guia-btn {
+        flex: 1 !important;
+        padding: 8px 16px !important;
+        border-radius: 4px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        border: none !important;
+        font-size: 14px !important;
+    }
+
+    .guia-btn-primary {
+        background: #333 !important;
+        color: #fff !important;
+        border: 1px solid #555 !important;
+    }
+
+        .guia-btn-primary:hover {
+            background: #444 !important;
+        }
+
+    .guia-btn-secondary {
+        background: #e0e0e0 !important;
+        color: #000 !important;
+    }
+
+        .guia-btn-secondary:hover {
+            background: #d0d0d0 !important;
+        }
+</style>
