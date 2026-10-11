@@ -17,9 +17,6 @@ namespace AppExtensionista.Enums
         Mililitro = 4,
 
         [Display(Name = "Unidade / Peça", ShortName = "un")]
-        Unidade = 5,
-
-        [Display(Name = "Pacote / Saco", ShortName = "pct")]
-        Pacote = 6
+        Unidade = 5
     }
 }
