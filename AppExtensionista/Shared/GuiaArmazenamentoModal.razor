@@ -28,7 +28,7 @@
                 <button class="guia-btn guia-btn-primary" @onclick="SalvarGuia" disabled="@salvando">
                     @(salvando ? "Salvando..." : "Salvar Guia")
                 </button>
-                <button class="guia-btn guia-btn-secondary" @onclick="FecharModal">Pular / Cancelar</button>
+                <button class="guia-btn guia-btn-secondary" @onclick="FecharModal">@(salvando ? "Ignorar" : "Sair")</button>
             </div>
         </div>
     </div>

@@ -60,9 +60,15 @@ namespace AppExtensionista.Services
                     }).OrderBy(i => i.DataValidade).ToList()
                 }).ToList();
 
+
+            // Busca as configurações globais do dispositivo
+            var settings = await _context.AppSettings.FirstOrDefaultAsync();
+            int diasAlerta = settings?.DiasAlertaVencimento ?? 7;
+            var dataLimite = DateTime.Today.AddDays(diasAlerta);
+
             // Totalizadores
             var totalCadastrados = await _context.Alimentos.CountAsync();
-            var totalVencidos = await _context.Estoques.CountAsync(e => e.Quantidade > 0 && e.DataValidade.Date < DateTime.Today);
+            var totalVencidos = await _context.Estoques.CountAsync(e => e.Quantidade > 0 && e.DataValidade.Date <= dataLimite);
             var totalDescartados = await _context.RegistrosDescarte.CountAsync();
 
             return new EstoqueIndexViewModel
@@ -152,9 +158,7 @@ namespace AppExtensionista.Services
             // Busca as configurações globais do dispositivo
             var settings = await _context.AppSettings.FirstOrDefaultAsync();
             int diasAlerta = settings?.DiasAlertaVencimento ?? 7;
-
-            var hoje = DateTime.Today;
-            var dataLimite = hoje.AddDays(diasAlerta);
+            var dataLimite = DateTime.Today.AddDays(diasAlerta);
 
             var itensAproximando = await _context.Estoques
                 .Include(e => e.Alimento)
