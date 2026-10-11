@@ -9,10 +9,6 @@ namespace AppExtensionista.ViewModels
         [Required]
         public int IdEstoque { get; set; }
 
-        public string NomeAlimento { get; set; }
-        public string Marca { get; set; }
-        public decimal QuantidadeDisponivel { get; set; }
-
         [Required(ErrorMessage = "Informe a quantidade a descartar.")]
         [Range(0.001, 999999, ErrorMessage = "A quantidade deve ser maior que zero.")]
         [Display(Name = "Quantidade a Descartar")]

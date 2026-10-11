@@ -35,7 +35,6 @@ namespace AppExtensionista.ViewModels
         public DateTime DataValidade { get; set; }
         public decimal Quantidade { get; set; }
         public string Marca { get; set; }
-        public bool IsVencido => DataValidade.Date < DateTime.Today;
         public string? UnidadeMedidaSigla { get; set; }
     }
 }
