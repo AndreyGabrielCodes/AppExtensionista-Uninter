@@ -90,8 +90,8 @@
 
     private async Task SalvarOpcoes()
     {
-        int auxDiasAlerta = _settings.DiasAlertaVencimento;
-        int auxDiasHistorico = _settings.DiasHistoricoDescartados;
+        int auxDiasAlerta = _settings?.DiasAlertaVencimento ?? 7;
+        int auxDiasHistorico = _settings?.DiasHistoricoDescartados ?? 30;
 
         try
         {
@@ -101,12 +101,19 @@
                 _settings.DiasHistoricoDescartados = diasHistorico;
                 await SettingsService.SaveSettingsAsync(_settings);
             }
+
             await OnFechar.InvokeAsync();
+
+            // Recarrega a página atual para aplicar as alterações nas opções
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
         }
         catch (Exception ex)
         {
-            _settings.DiasAlertaVencimento = auxDiasAlerta;
-            _settings.DiasHistoricoDescartados = auxDiasHistorico;
+            if (_settings != null)
+            {
+                _settings.DiasAlertaVencimento = auxDiasAlerta;
+                _settings.DiasHistoricoDescartados = auxDiasHistorico;
+            }
             mensagemErro = $"Erro ao salvar: {ex.Message}";
         }
     }
