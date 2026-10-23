@@ -4,6 +4,7 @@
 @using AppExtensionista.ViewModels
 @using AppExtensionista.Services
 @using AppExtensionista.Enums
+@using AppExtensionista.Shared
 @inject IEstoqueService EstoqueService
 @inject IDescarteService DescarteService
 @inject NavigationManager Navigation
@@ -11,7 +12,7 @@
 
 <AppExtensionista.Shared.TopNav Titulo="Estoque" Descricao="Visualização dos alimentos cadastrados em estoque" />
 
-<AlertaVencimentoModal @ref="modalAlertaRef" />
+<AppExtensionista.Shared.AlertaVencimentoModal @ref="modalAlertaRef" />
 <AppExtensionista.Shared.GuiaArmazenamentoModal @ref="guiaModalEstoqueRef" />
 
 <div class="mobile-container pb-60">
@@ -237,7 +238,7 @@
         }
     }
 
-    private AlertaVencimentoModal? modalAlertaRef;
+    private AppExtensionista.Shared.AlertaVencimentoModal? modalAlertaRef;
 
     private async Task AbrirModalVencidosManual()
     {
