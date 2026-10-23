@@ -1,0 +1,3 @@
+Para criar o instalador, basta abrir o arquivo iss, e então clicar em play
+
+Ele criará uma pasta Output que dentro conterá o arquivo para instalação do aplicativo
