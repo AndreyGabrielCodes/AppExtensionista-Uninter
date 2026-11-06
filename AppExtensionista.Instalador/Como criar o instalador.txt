@@ -1,3 +1,11 @@
-Para criar o instalador, basta abrir o arquivo iss, e então clicar em play
+Primeiro é necessário baixar e instalar o InnoSetup no computador, com o executável dele "innosetup-6.7.3.exe"
+
+Após instalá-lo, basta abrir o arquivo iss com dois cliques, ele abrirá dentro do InnoSetup
+
+Em seguida, basta clicar em Run > Run
 
 Ele criará uma pasta Output que dentro conterá o arquivo para instalação do aplicativo
+
+Basta executar o instalador, escolher a pasta de instalação, e ele estará instalado. Pode ser escolhido a opção de criar atalho na área de trabalho para facilitar o uso
+
+Após pode ser acessado pelo atalho criado na área de trabalho ou basta pesquisar no menu Iniciar do Windows por App Extensionista

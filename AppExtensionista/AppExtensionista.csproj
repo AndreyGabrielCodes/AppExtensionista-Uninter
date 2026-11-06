@@ -16,7 +16,12 @@
 
 		<!-- Força a extração de dlls nativas e assets para a pasta temp -->
 		<IncludeNativeLibrariesInSingleFile>true</IncludeNativeLibrariesInSingleFile>
+		<ApplicationIcon>appextensionista.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="appextensionista.ico" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.20">
