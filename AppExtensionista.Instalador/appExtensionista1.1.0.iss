@@ -1,5 +1,5 @@
-#define MyAppName "ControleDeAlimentos"
-#define MyAppVersion "1.0.1"
+#define MyAppName "Controle De Alimentos"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "Andrey Gabriel de Andrade Moraes - RU 4731589"
 #define MyAppExeName "AppExtensionista.exe"
 #define MyIconPath "C:\PROJETOS\AppExtensionista-Uninter\AppExtensionista\appextensionista.ico"
